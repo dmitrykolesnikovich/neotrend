@@ -54,10 +54,10 @@ actual fun drawableToImageBitmap(drawable: String): ImageBitmap {
             memcpy(it.addressOf(0), representation.bytes, representation.length)
         }
     }
-    return bytes.toComposeImageBitmap()
+    return bytes.bitmap()
 }
 
-actual fun ByteArray.toComposeImageBitmap(): ImageBitmap {
+actual fun ByteArray.bitmap(): ImageBitmap {
     return Image.makeFromEncoded(this).toComposeImageBitmap()
 }
 

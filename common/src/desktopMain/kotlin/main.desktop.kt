@@ -17,39 +17,31 @@ import org.jetbrains.skia.Image
 
 @Composable
 actual fun VideoPlayer(modifier: Modifier, fileName: String) {
-    val bitmap: ImageBitmap = "video-player.png".bitmap()
-    Image(bitmap = bitmap, contentDescription = "video player placeholder", modifier = modifier)
+    Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier = modifier)
 }
 
 @Composable
 actual fun drawableToImageBitmap(drawable: String): ImageBitmap {
-    val painter: Painter = painterResource("drawables/$drawable")
-    return painter.toImageBitmap(painter.intrinsicSize, Density(1.0f, 1.0f), LayoutDirection.Ltr)
+    return "drawables/$drawable".bitmap()
 }
 
-actual fun ByteArray.toComposeImageBitmap(): ImageBitmap {
-    try {
-        val bytes: ByteArray = this
-        val image: Image = Image.makeFromEncoded(bytes)
-        val bitmap: ImageBitmap = Bitmap.makeFromImage(image).asComposeImageBitmap()
-        return bitmap
-    } catch (e: Exception) {
-        println("breakpoint")
-        throw e
-    }
+actual fun ByteArray.bitmap(): ImageBitmap {
+    val bytes: ByteArray = this
+    val image: Image = Image.makeFromEncoded(bytes)
+    val bitmap: ImageBitmap = Bitmap.makeFromImage(image).asComposeImageBitmap()
+    return bitmap
 }
 
 @Composable
-fun String.bitmap(): ImageBitmap {
-    val painter: Painter = painterResource(this)
-    return painter.toImageBitmap(painter.intrinsicSize, Density(1.0f, 1.0f), LayoutDirection.Ltr)
-}
-
-fun Painter.toImageBitmap(size: Size, density: Density, layoutDirection: LayoutDirection): ImageBitmap {
-    val bitmap = ImageBitmap(size.width.toInt(), size.height.toInt())
-    val canvas = Canvas(bitmap)
-    CanvasDrawScope().draw(density, layoutDirection, canvas, size) {
-        draw(size)
+private fun String.bitmap(): ImageBitmap {
+    val resourcePath: String = this
+    val painter: Painter = painterResource(resourcePath)
+    val size: Size = painter.intrinsicSize
+    val bitmap: ImageBitmap = ImageBitmap(size.width.toInt(), size.height.toInt())
+    CanvasDrawScope().draw(Density(1.0f, 1.0f), LayoutDirection.Ltr, Canvas(bitmap), size) {
+        with(painter) {
+            draw(size)
+        }
     }
     return bitmap
 }

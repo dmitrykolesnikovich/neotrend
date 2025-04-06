@@ -53,7 +53,7 @@ fun App(navigation: Navigation = remember { Navigation() }) {
                     .clickable { println("CardView Clicked....") }, elevation = 6.dp, shape = RoundedCornerShape(8.dp), backgroundColor = Color(0xFF00BFA5),) {
                 Row(modifier = Modifier.padding(16.dp)) {
                     Image(
-                        bitmap = avatar.toComposeImageBitmap(),
+                        bitmap = avatar.bitmap(),
                         contentDescription = "Card Image",
                         modifier = Modifier.width(29.dp).height(28.dp)
                             .clip(RoundedCornerShape(8.dp))
@@ -82,4 +82,4 @@ expect fun VideoPlayer(modifier: Modifier, fileName: String)
 @Composable
 expect fun drawableToImageBitmap(drawable: String): ImageBitmap
 
-expect fun ByteArray.toComposeImageBitmap(): ImageBitmap
+expect fun ByteArray.bitmap(): ImageBitmap
