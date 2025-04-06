@@ -17,7 +17,7 @@ import org.jetbrains.skia.Image
 
 @Composable
 actual fun VideoPlayer(modifier: Modifier, fileName: String) {
-    Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier = modifier)
+    Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier)
 }
 
 @Composable

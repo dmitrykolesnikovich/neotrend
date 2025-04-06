@@ -53,8 +53,6 @@ kotlin {
                 api(compose.preview)
                 implementation(libs.koin.core)
                 implementation(libs.ktor.java)
-                implementation("uk.co.caprica:vlcj:4.7.0")
-                implementation("uk.co.caprica:vlcj-natives:4.7.0")
             }
         }
         val iosMain by getting {

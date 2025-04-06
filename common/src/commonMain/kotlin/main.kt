@@ -42,7 +42,7 @@ fun App(navigation: Navigation = remember { Navigation() }) {
     var text by remember { mutableStateOf("Hello, World!") }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
-            VideoPlayer(modifier = Modifier.fillMaxWidth().height(400.dp), author.fileName)
+            VideoPlayer(modifier = Modifier.fillMaxSize(), author.fileName)
             Button(onClick = {
                 text = "Hello!"
                 navigation.navigate("example1")
