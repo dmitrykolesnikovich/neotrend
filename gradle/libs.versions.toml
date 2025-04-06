@@ -12,6 +12,7 @@ composeGradle = { module = "org.jetbrains.compose:compose-gradle-plugin", versio
 kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-util = {module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose"}
 koin-core = {module = "io.insert-koin:koin-core", version.ref = "koin-version"}
+ktor-java = {module = "io.ktor:ktor-client-java", version.ref = "ktor_version"}
 ktor-serialization = {module = "io.ktor:ktor-client-serialization", version.ref = "ktor_version"}
 ktor-ios = {module = "io.ktor:ktor-client-ios", version.ref = "ktor_version"}
 ktor-client-logging = {module = "io.ktor:ktor-client-logging", version.ref = "ktor_version"}

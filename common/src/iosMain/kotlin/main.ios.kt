@@ -45,6 +45,7 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
     example2()
 }
 
+@Composable
 actual fun drawableToImageBitmap(drawable: String): ImageBitmap {
     val image: UIImage = UIImage.imageNamed(drawable, NSBundle.mainBundle, withConfiguration = null) ?: error("drawable: $drawable")
     val representation: NSData = checkNotNull(UIImagePNGRepresentation(image))

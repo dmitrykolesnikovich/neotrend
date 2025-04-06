@@ -9,6 +9,13 @@ group = "site.neotrend"
 version = "1.0-SNAPSHOT"
 
 kotlin {
+    jvm("desktop") {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+    }
     ios()
     iosSimulatorArm64()
     cocoapods {
@@ -39,6 +46,15 @@ kotlin {
                 implementation(libs.material.icon.extended)
                 api(libs.image.loader)
                 implementation(libs.compose.util)
+            }
+        }
+        val desktopMain by getting {
+            dependencies {
+                api(compose.preview)
+                implementation(libs.koin.core)
+                implementation(libs.ktor.java)
+                implementation("uk.co.caprica:vlcj:4.7.0")
+                implementation("uk.co.caprica:vlcj-natives:4.7.0")
             }
         }
         val iosMain by getting {

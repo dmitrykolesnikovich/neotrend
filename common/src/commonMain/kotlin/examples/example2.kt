@@ -6,9 +6,8 @@ import site.neotrend.common.App
 import site.neotrend.common.Navigation
 
 @Composable
-fun example2() {
+fun example2(navigation: Navigation = remember { Navigation() }) {
     println("example2")
-    val navigation: Navigation = remember { Navigation() }
     navigation.screen("example1") { example1(navigation) }
     navigation.screen("App") { App(navigation) }
     navigation.host("example1")

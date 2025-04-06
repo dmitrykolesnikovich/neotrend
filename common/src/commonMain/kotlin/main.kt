@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-internal fun App(navigation: Navigation) {
+fun App(navigation: Navigation = remember { Navigation() }) {
     println("App")
     val author: Author = readAuthor()
     val avatar: ByteArray = readAvatar(author.authorDto.id)
@@ -79,6 +79,7 @@ internal fun App(navigation: Navigation) {
 @Composable
 expect fun VideoPlayer(modifier: Modifier, fileName: String)
 
+@Composable
 expect fun drawableToImageBitmap(drawable: String): ImageBitmap
 
 expect fun ByteArray.toComposeImageBitmap(): ImageBitmap
