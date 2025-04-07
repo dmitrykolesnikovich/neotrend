@@ -2,15 +2,8 @@ package site.neotrend
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
@@ -123,7 +116,7 @@ private fun Player(navigation: Navigation) {
                     // hidden
                 }
                 PAYMENT -> {
-                    Text("PAY")
+                    Text("PAYMENT")
                     Button(onClick = { updateSheetStep(MESSAGE) }) { Text("MESSAGE") }
                 }
                 MESSAGE -> {
@@ -136,23 +129,48 @@ private fun Player(navigation: Navigation) {
                 }
             }
         }) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.fillMaxSize().background(color = Color.Black), contentAlignment = Alignment.Center) {
                 val video: Video = remember {
                     Video(appState.author.fileName) {
                         playerClicked()
                     }
                 }
                 VideoPlayer(video, modifier = Modifier.fillMaxSize())
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+                Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.BottomCenter) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
                         if (elementsVisible) {
-                            CircleImage(appState.avatarBitmap, 128)
-                            Text("${if (video.duration.value != 0L) video.duration.value else ""}", color = Color.White)
-                            Row(modifier = Modifier.padding(16.dp)) {
-                                Image("eye.svg", 29, 28)
-                                Image("comments.svg", 29, 28)
-                                Image("arrows.svg", 29, 28)
-                                Image("bookmark.svg", 29, 28)
+                            val statistics: AuthorStatistics = appState.author.statistics
+                            Row(modifier = Modifier) {
+                                CircleImage(appState.avatarBitmap, 64)
+                                Spacer(Modifier.fillMaxWidth().weight(1f))
+                            }
+                            Row(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
+                                Text(appState.author.fileName, color = Color.White)
+                                Text(
+                                    if (video.duration.value != 0L) "(${video.duration.value.toTimeText()})" else "",
+                                    color = Color.White,
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                                Spacer(Modifier.fillMaxWidth().weight(1f))
+                                Text(appState.author.createdDate, color = Color.White)
+                            }
+                            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Image("eye.svg", 29, 28)
+                                    Text(statistics.viewsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp))
+                                }
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Image("comments.svg", 29, 28)
+                                    Text(statistics.commentsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp))
+                                }
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Image("arrows.svg", 29, 28)
+                                    Text(statistics.repostsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp))
+                                }
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Image("bookmark.svg", 29, 28)
+                                    Text(statistics.savesCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp))
+                                }
                             }
                         }
                         Button(onClick = { updateSheetStep(PAYMENT) }) { Text("Заказать обзор у блогера") }
@@ -171,4 +189,25 @@ private fun CircleImage(bitmap: ImageBitmap, diameter: Int) {
 @Composable
 private fun Image(drawable: String, width: Int, height: Int) {
     Image(drawable.bitmap(), contentDescription = null, modifier = Modifier.width(width.dp).height(height.dp))
+}
+
+private fun Long.toTimeText(): String {
+    val time: Long = this
+    val seconds: Long = time % 60
+    val minutes: Long = time / 60
+    return "${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}"
+}
+
+private fun Int.toCountText(): String {
+    val count: Int = this
+    if (count < 1000) {
+        return count.toString()
+    } else if (count < 10000) {
+        val thousands: Float = count / 1000.0f
+        val thousandsText: String = thousands.toString().replace(".", ",").substring(0, 3)
+        return "$thousandsText тыс."
+    } else {
+        val thousands: Int = count / 1000
+        return "$thousands тыс."
+    }
 }
