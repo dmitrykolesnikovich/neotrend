@@ -18,6 +18,10 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Image
 import java.io.File
@@ -45,10 +49,18 @@ actual fun String.bitmap(): ImageBitmap {
 
 @Composable
 actual fun VideoPlayer(modifier: Modifier, video: Video) {
-    Box(modifier = Modifier
-            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { video.onClick() }
-            .fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier
+        .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { video.onClick() }
+        .fillMaxSize(), contentAlignment = Alignment.Center) {
         Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier)
+    }
+    remember {
+        val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+        scope.launch {
+            delay(30)
+            video.duration.value = 123
+        }
     }
 }
 

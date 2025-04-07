@@ -140,7 +140,7 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
             val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
             println("time.value: ${time.value}")
             println("time.timescale: ${time.timescale}")
-            video.duration = if (time.timescale != 0) time.value / time.timescale else time.value
+            video.duration.value = if (time.timescale != 0) time.value / time.timescale else time.value
             println("video.duration: ${video.duration}")
         }
     }

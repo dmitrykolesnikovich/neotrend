@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
@@ -93,7 +94,6 @@ private fun Player(navigation: Navigation) {
         LaunchedEffect(epochMillis()) {
             delay(3000)
             elementsVisible = false
-            println("hide!!!")
         }
     }
 
@@ -115,40 +115,39 @@ private fun Player(navigation: Navigation) {
         }
     } else {
         ModalBottomSheetLayout(sheetState = sheetState, sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp), sheetContent = {
-                IconButton(onClick = { updateSheetStep(INITIAL) }) {
-                    Icon(Icons.Default.Close, contentDescription = null)
+            IconButton(onClick = { updateSheetStep(INITIAL) }) {
+                Icon(Icons.Default.Close, contentDescription = null)
+            }
+            when (sheetStep) {
+                INITIAL -> {
+                    // hidden
                 }
-                when (sheetStep) {
-                    INITIAL -> {
-                        // hidden
-                    }
-                    PAYMENT -> {
-                        Text("PAY")
-                        Button(onClick = { updateSheetStep(MESSAGE) }) { Text("MESSAGE") }
-                    }
-                    MESSAGE -> {
-                        Text("MESSAGE")
-                        Button(onClick = { updateSheetStep(SUCCESS) }) { Text("SUCCESS") }
-                    }
-                    SUCCESS -> {
-                        Text("SUCCESS")
-                        Button(onClick = { updateSheetStep(INITIAL) }) { Text("INITIAL") }
-                    }
+                PAYMENT -> {
+                    Text("PAY")
+                    Button(onClick = { updateSheetStep(MESSAGE) }) { Text("MESSAGE") }
                 }
-            }) {
+                MESSAGE -> {
+                    Text("MESSAGE")
+                    Button(onClick = { updateSheetStep(SUCCESS) }) { Text("SUCCESS") }
+                }
+                SUCCESS -> {
+                    Text("SUCCESS")
+                    Button(onClick = { updateSheetStep(INITIAL) }) { Text("INITIAL") }
+                }
+            }
+        }) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 val video: Video = remember {
-                    Video(appState.author.fileName, 0) {
+                    Video(appState.author.fileName) {
                         playerClicked()
                     }
                 }
-                val videoDuration: Long by remember { mutableStateOf(video.duration) }
                 VideoPlayer(modifier = Modifier.fillMaxSize(), video)
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
                         if (elementsVisible) {
                             CircleImage(appState.avatarBitmap, 128)
-                            Text("$videoDuration")
+                            Text("${if (video.duration.value != 0L) video.duration.value else ""}", color = Color.White)
                             Row(modifier = Modifier.padding(16.dp)) {
                                 Image("eye.svg", 29, 28)
                                 Image("comments.svg", 29, 28)
