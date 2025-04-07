@@ -92,7 +92,7 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
             layer.setFrame(rect)
             controller.view.layer.frame = rect
             CATransaction.commit()
-            val time: CMTime = checkNotNull(player.currentItem).duration.kotlinValue
+            val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
             video.duration = time.value / time.timescale
             println("time.value: ${time.value}")
             println("time.value: ${time.timescale}")
@@ -144,5 +144,3 @@ private fun ByteArray.toNSData(): NSData {
 actual fun epochMillis(): Long = memScoped {
     return NSDate.date().timeIntervalSince1970.toLong() * 1000
 }
-
-inline val <reified T : CVariable> CValue<T>.kotlinValue: T get() = useContents { this }

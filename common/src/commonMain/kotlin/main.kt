@@ -23,7 +23,10 @@ import site.neotrend.platform.bitmap
 import site.neotrend.platform.epochMillis
 
 private enum class SheetStep {
-    INITIAL, PAYMENT, MESSAGE, SUCCESS,
+    INITIAL,
+    PAYMENT,
+    MESSAGE,
+    SUCCESS,
 }
 
 @Composable
@@ -83,8 +86,7 @@ private fun Player(navigation: Navigation) {
             CircularProgressIndicator(modifier = Modifier.size(64.dp))
         }
     } else {
-        ModalBottomSheetLayout(
-            sheetState = sheetState, sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp), sheetContent = {
+        ModalBottomSheetLayout(sheetState = sheetState, sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp), sheetContent = {
                 IconButton(onClick = { updateSheetStep(INITIAL) }) {
                     Icon(Icons.Default.Close, contentDescription = null)
                 }
@@ -106,18 +108,15 @@ private fun Player(navigation: Navigation) {
                     }
                 }
             }) {
-            Box(
-                modifier = Modifier.clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { playerClicked() }.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { playerClicked() }.fillMaxSize(), contentAlignment = Alignment.Center) {
                 val video: Video = remember { Video(appState.author.fileName, 0) }
-                val videoDuration: Long by remember { mutableStateOf(video.duration) }
+//                val videoDuration: Long by remember { mutableStateOf(video.duration) }
                 VideoPlayer(modifier = Modifier.fillMaxSize(), video)
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
                         if (elementsVisible) {
                             CircleImage(appState.avatarBitmap, 128)
-                            Text("$videoDuration")
+//                            Text("$videoDuration")
                             Row(modifier = Modifier.padding(16.dp)) {
                                 Image("eye.svg", 29, 28)
                                 Image("comments.svg", 29, 28)
