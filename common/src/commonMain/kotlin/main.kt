@@ -91,7 +91,7 @@ private fun Player(navigation: Navigation) {
     }
 
     @Composable
-    fun SheetView(step: SheetStep, content: @Composable () -> Unit) {
+    fun SheetView(step: SheetStep, onClick: () -> Unit, content: @Composable () -> Unit) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.padding(16.dp)) {
             Box(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                 Text(step.title, style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 18.sp), modifier = Modifier.align(alignment = Alignment.Center))
@@ -102,7 +102,10 @@ private fun Player(navigation: Navigation) {
             content()
             Button(
                 modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(4.dp)).padding(bottom = 4.dp).keyboardBottomPadding(),
-                onClick = { updateSheetStep(step.next()) }) {
+                onClick = {
+                    onClick()
+                    updateSheetStep(step.next())
+                }) {
                 Text(step.button)
             }
         }
@@ -116,7 +119,12 @@ private fun Player(navigation: Navigation) {
     } else {
         var message: String by remember { mutableStateOf(WELCOME) }
         ModalBottomSheetLayout(sheetState = sheetState, sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp), sheetContent = {
-            SheetView(sheetStep) {
+            SheetView(sheetStep, onClick = {
+                if (sheetStep == MESSAGE) {
+                    println(message)
+                    message = WELCOME
+                }
+            }) {
                 val author: Author = appState.author
                 when (sheetStep) {
                     INITIAL -> {
@@ -173,7 +181,6 @@ private fun Player(navigation: Navigation) {
                             modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
                             textAlign = TextAlign.Start
                         )
-                        println("main: $message")
                         AnnotatedTextField(
                             message, onValueChange = { message = it },
                             modifier = Modifier.fillMaxWidth().onFocusChanged {

@@ -146,7 +146,7 @@ actual fun VideoPlayer(video: Video, modifier: Modifier) {
         item.onupdate(accept = { item.time.value != 0L }) {
             val time: CMTime = item.time
             video.duration.value = if (time.timescale != 0) time.value / time.timescale else time.value
-            println("times: ${timeInitial.value}, ${time.value}")
+//            println("times: ${timeInitial.value}, ${time.value}")
         }
         NSNotificationCenter.defaultCenter.addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, player.currentItem, NSOperationQueue.mainQueue)  {
             video.ended.value = true
