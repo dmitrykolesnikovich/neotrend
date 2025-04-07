@@ -80,10 +80,12 @@ actual fun VideoPlayer(video: Video, modifier: Modifier) {
             } else {
                 player.rate = 0f
             }
-            if (onEnded()) {
-                player.seekToTime(CMTimeMake(value = 0, timescale = 1000))
-                player.rate = 1f
-            }
+//            if (onEnded()) {
+//                player.play()
+//                player.seekToTime(CMTimeMake(value = 1L, timescale = 1000))
+//                player.play()
+//                player.rate = 1f
+//            }
         }
 
     }
@@ -116,12 +118,13 @@ actual fun VideoPlayer(video: Video, modifier: Modifier) {
 //    }
 //    println("status - after")
 
+    var ended: Boolean = false
     val layer: AVPlayerLayer = remember { AVPlayerLayer() }
     val controller: PlayerController = remember { PlayerController() }
     controller.player = player
     controller.showsPlaybackControls = false
     controller.onClick = video.onClick
-    controller.onEnded = { video.ended.value.also { video.ended.value = false } }
+    controller.onEnded = { ended.also { ended = false }  }
     layer.player = player
     UIKitView(
         factory = {
@@ -149,7 +152,8 @@ actual fun VideoPlayer(video: Video, modifier: Modifier) {
 //            println("times: ${timeInitial.value}, ${time.value}")
         }
         NSNotificationCenter.defaultCenter.addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, player.currentItem, NSOperationQueue.mainQueue)  {
-            video.ended.value = true
+            println("ended!")
+            ended = true
         }
     }
 }

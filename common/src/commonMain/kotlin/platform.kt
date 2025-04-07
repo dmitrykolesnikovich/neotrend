@@ -22,7 +22,6 @@ expect fun epochMillis(): Long
 
 class Video(val fileName: String, val onClick: () -> Unit) {
     val duration: MutableState<Long> = mutableStateOf(0)
-    val ended: MutableState<Boolean> = mutableStateOf(false)
 }
 
 fun clamp(value: Int, min: Number = 0f, max: Number = 1f): Int = max(min.toInt(), min(max.toInt(), value))
