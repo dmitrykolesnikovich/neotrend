@@ -13,6 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -92,8 +93,8 @@ private fun Player(navigation: Navigation) {
 
     @Composable
     fun SheetView(step: SheetStep, onClick: () -> Unit, content: @Composable () -> Unit) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.padding(16.dp)) {
-            Box(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.padding(end = 16.dp, start = 16.dp, top = 12.dp, bottom = 32.dp)) {
+            Box(modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
                 Text(step.title, style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 18.sp), modifier = Modifier.align(alignment = Alignment.Center))
                 IconButton(onClick = { updateSheetStep(INITIAL) }, modifier = Modifier.align(alignment = Alignment.CenterEnd).size(24.dp)) {
                     Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(24.dp), tint = Color.DarkGray)
@@ -101,7 +102,7 @@ private fun Player(navigation: Navigation) {
             }
             content()
             Button(
-                modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(4.dp)).padding(bottom = 4.dp).keyboardBottomPadding(),
+                modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(8.dp)).padding(bottom = 4.dp, top = 16.dp).height(48.dp).keyboardBottomPadding(),
                 onClick = {
                     onClick()
                     updateSheetStep(step.next())
@@ -130,11 +131,8 @@ private fun Player(navigation: Navigation) {
                         message = WELCOME
                     }
                     PAYMENT -> {
-                        Column(
-                            modifier = Modifier.fillMaxWidth().background(color = Color(0xffF3F2F8), shape = RoundedCornerShape(12.dp))
-                                .padding(end = 8.dp, start = 8.dp, top = 0.dp, bottom = 0.dp), verticalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                        Column(modifier = Modifier.fillMaxWidth().background(color = Color(0xffF3F2F8), shape = RoundedCornerShape(12.dp)), verticalArrangement = Arrangement.SpaceEvenly) {
+                            Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {
                                 Text("Блогер", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
                                 Text(
                                     "@${author.authorDto.name}",
@@ -143,7 +141,7 @@ private fun Player(navigation: Navigation) {
                                 )
                             }
                             Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
-                            Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                            Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {
                                 Text("Рейтинг", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
                                 Row(modifier = Modifier.align(alignment = Alignment.CenterEnd), verticalAlignment = Alignment.CenterVertically) {
                                     Text(
@@ -162,7 +160,7 @@ private fun Player(navigation: Navigation) {
                                 }
                             }
                             Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
-                            Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                            Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {
                                 Text("Стоимость обзора", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
                                 Text(
                                     "120 BYN",
@@ -202,44 +200,42 @@ private fun Player(navigation: Navigation) {
                     }
                 }
                 VideoPlayer(video, modifier = Modifier.fillMaxSize())
-                Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.BottomCenter) {
+                Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.BottomCenter) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
                         if (elementsVisible) {
                             val statistics: AuthorStatistics = appState.author.statistics
-                            Row(modifier = Modifier) {
-                                CircleImage(appState.avatarBitmap, 64)
+                            Row(modifier = Modifier.padding(start = 8.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                CircleImage(appState.avatarBitmap, 48)
+                                Text(appState.author.authorDto.name, color = Color.White, fontSize = 16.sp, modifier = Modifier.padding(start = 8.dp))
                                 Spacer(Modifier.fillMaxWidth().weight(1f))
                             }
-                            Row(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
-                                Text(appState.author.fileName, color = Color.White)
-                                Text(
-                                    if (video.duration.value != 0L) "(${video.duration.value.toTimeText()})" else "",
-                                    color = Color.White,
-                                    modifier = Modifier.padding(start = 8.dp)
-                                )
+                            Row(modifier = Modifier.padding(top = 8.dp, bottom = 32.dp, start = 8.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                Text(appState.author.fileName, color = Color.White, style = TextStyle(fontSize = 20.sp))
                                 Spacer(Modifier.fillMaxWidth().weight(1f))
-                                Text(appState.author.createdDate, color = Color.White)
+                                Text("${appState.author.createdDate} ${if (video.duration.value != 0L) " (${video.duration.value.toTimeText()})" else ""}", color = Color.White, fontSize = 16.sp)
                             }
-                            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp), horizontalArrangement = Arrangement.SpaceAround) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Image("eye.svg", 29, 28)
-                                    Text(statistics.viewsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp))
+                                    Image("eye.svg", 29, 28, Modifier.scale(1.25f))
+                                    Text(statistics.viewsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp), fontSize = 20.sp)
                                 }
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Image("comments.svg", 29, 28)
-                                    Text(statistics.commentsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp))
+                                    Image("comments.svg", 29, 28, Modifier.scale(1.25f))
+                                    Text(statistics.commentsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp), fontSize = 20.sp)
                                 }
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Image("arrows.svg", 29, 28)
-                                    Text(statistics.repostsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp))
+                                    Image("arrows.svg", 29, 28, Modifier.scale(1.25f))
+                                    Text(statistics.repostsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp), fontSize = 20.sp)
                                 }
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Image("bookmark.svg", 29, 28)
-                                    Text(statistics.savesCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp))
+                                    Image("bookmark.svg", 29, 28, Modifier.scale(1.25f))
+                                    Text(statistics.savesCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp), fontSize = 20.sp)
                                 }
                             }
                         }
-                        Button(onClick = { updateSheetStep(PAYMENT) }) { Text("Заказать обзор у блогера") }
+                        Button(onClick = { updateSheetStep(PAYMENT) }, modifier = Modifier.fillMaxWidth().height(80.dp).padding(bottom = 20.dp).clip(shape = RoundedCornerShape(8.dp))) {
+                            Text("Заказать обзор у блогера", fontSize = 20.sp)
+                        }
                     }
                 }
             }
@@ -253,8 +249,8 @@ private fun CircleImage(bitmap: ImageBitmap, diameter: Int) {
 }
 
 @Composable
-private fun Image(drawable: String, width: Int, height: Int) {
-    Image(drawable.bitmap(), contentDescription = null, modifier = Modifier.width(width.dp).height(height.dp))
+private fun Image(drawable: String, width: Int, height: Int, modifier: Modifier = Modifier) {
+    Image(drawable.bitmap(), contentDescription = null, modifier = modifier.width(width.dp).height(height.dp))
 }
 
 private fun Long.toTimeText(): String {
