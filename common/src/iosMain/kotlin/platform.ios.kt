@@ -31,7 +31,7 @@ actual fun VideoPlayer(modifier: Modifier, fileName: String) {
     check(url.exists())
     val player: AVPlayer = remember { AVPlayer(url) }
     val layer: AVPlayerLayer = remember { AVPlayerLayer() }
-    val controller: MyViewController = remember { MyViewController() }
+    val controller: PlayerController = remember { PlayerController() }
     controller.player = player
     controller.showsPlaybackControls = false
     layer.player = player
@@ -93,7 +93,7 @@ private fun ByteArray.toNSData(): NSData {
 }
 
 @ExportObjCClass
-private class MyViewController : AVPlayerViewController {
+private class PlayerController : AVPlayerViewController {
 
     @OverrideInit
     constructor() : super(null, null)
