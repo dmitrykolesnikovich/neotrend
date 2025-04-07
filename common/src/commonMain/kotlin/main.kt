@@ -1,8 +1,8 @@
 package site.neotrend
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -10,6 +10,9 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +20,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import site.neotrend.SheetStep.*
 import site.neotrend.platform.VideoPlayer
+import site.neotrend.platform.bitmap
 
 @Composable
 fun App() {
@@ -89,7 +93,18 @@ private fun Player(navigation: Navigation) {
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 VideoPlayer(modifier = Modifier.fillMaxSize(), appState.author.fileName)
-                Button(onClick = { updateSheetStep(PAYMENT) }) { Text("Заказать обзор у блогера") }
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
+                        CircleImage(appState.avatarBitmap, 128)
+                        Row(modifier = Modifier.padding(16.dp)) {
+                            Image("eye.svg", 29, 28)
+                            Image("comments.svg", 29, 28)
+                            Image("arrows.svg", 29, 28)
+                            Image("bookmark.svg", 29, 28)
+                        }
+                        Button(onClick = { updateSheetStep(PAYMENT) }) { Text("Заказать обзор у блогера") }
+                    }
+                }
             }
         }
     }
@@ -100,4 +115,15 @@ private enum class SheetStep {
     PAYMENT,
     MESSAGE,
     SUCCESS,
+}
+
+@Composable
+private fun CircleImage(bitmap: ImageBitmap, diameter: Int) {
+    Image(bitmap, contentDescription = null, modifier = Modifier.size(diameter.dp).clip(RoundedCornerShape((diameter / 2).dp)))
+}
+
+@Composable
+private fun Image(drawable: String, width: Int, height: Int) {
+    Image(drawable.bitmap(), contentDescription = null, modifier = Modifier.width(width.dp).height(height.dp))
+    // .clip(RoundedCornerShape(8.dp)).border(2.dp, Color.White, RoundedCornerShape(8.dp)))
 }
