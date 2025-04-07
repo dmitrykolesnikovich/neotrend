@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 expect fun cacheBytes(fileName: String, readBytes: () -> ByteArray)
 
 @Composable
-expect fun VideoPlayer(modifier: Modifier, video: Video)
+expect fun VideoPlayer(video: Video, modifier: Modifier)
 
 @Composable
 expect fun String.bitmap(): ImageBitmap
@@ -20,4 +20,5 @@ expect fun epochMillis(): Long
 
 class Video(val fileName: String, val onClick: () -> Unit) {
     val duration: MutableState<Long> = mutableStateOf(0)
+    val ended: MutableState<Boolean> = mutableStateOf(false)
 }

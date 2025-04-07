@@ -48,7 +48,7 @@ actual fun String.bitmap(): ImageBitmap {
 }
 
 @Composable
-actual fun VideoPlayer(modifier: Modifier, video: Video) {
+actual fun VideoPlayer(video: Video, modifier: Modifier) {
     Box(
         modifier = Modifier
         .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { video.onClick() }

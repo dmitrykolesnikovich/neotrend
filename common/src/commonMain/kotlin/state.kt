@@ -49,7 +49,6 @@ fun readAppState(): AppState {
     val author: Author = readAuthor()
     val avatarBitmap: ImageBitmap = readAvatar(author.authorDto.id)
     cacheBytes(author.fileName) { readVideo(author.fileName) }
-    println(author)
     return AppState(author, avatarBitmap)
 }
 

@@ -20,19 +20,24 @@ import kotlinx.coroutines.launch
 import org.jetbrains.skia.Image
 import platform.AVFoundation.AVPlayer
 import platform.AVFoundation.AVPlayerItem
+import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerLayer
 import platform.AVFoundation.currentItem
 import platform.AVFoundation.duration
 import platform.AVFoundation.play
 import platform.AVFoundation.rate
+import platform.AVFoundation.seekToTime
 import platform.AVKit.AVPlayerViewController
 import platform.CoreGraphics.CGRect
 import platform.CoreMedia.CMTime
+import platform.CoreMedia.CMTimeMake
 import platform.Foundation.NSBundle
 import platform.Foundation.NSData
 import platform.Foundation.NSDate
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSNotificationCenter
+import platform.Foundation.NSOperationQueue
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.create
@@ -57,11 +62,12 @@ actual fun cacheBytes(fileName: String, readBytes: () -> ByteArray) {
 }
 
 @Composable
-actual fun VideoPlayer(modifier: Modifier, video: Video) {
+actual fun VideoPlayer(video: Video, modifier: Modifier) {
     @ExportObjCClass
     class PlayerController : AVPlayerViewController {
 
         lateinit var onClick: () -> Unit
+        lateinit var onEnded: () -> Boolean
 
         @OverrideInit
         constructor() : super(null, null)
@@ -73,6 +79,10 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
                 player.rate = 1f
             } else {
                 player.rate = 0f
+            }
+            if (onEnded()) {
+                player.seekToTime(CMTimeMake(value = 0, timescale = 1000))
+                player.rate = 1f
             }
         }
 
@@ -111,6 +121,7 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
     controller.player = player
     controller.showsPlaybackControls = false
     controller.onClick = video.onClick
+    controller.onEnded = { video.ended.value.also { video.ended.value = false } }
     layer.player = player
     UIKitView(
         factory = {
@@ -136,6 +147,9 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
             val time: CMTime = item.time
             video.duration.value = if (time.timescale != 0) time.value / time.timescale else time.value
             println("times: ${timeInitial.value}, ${time.value}")
+        }
+        NSNotificationCenter.defaultCenter.addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, player.currentItem, NSOperationQueue.mainQueue)  {
+            video.ended.value = true
         }
     }
 }

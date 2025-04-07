@@ -142,7 +142,7 @@ private fun Player(navigation: Navigation) {
                         playerClicked()
                     }
                 }
-                VideoPlayer(modifier = Modifier.fillMaxSize(), video)
+                VideoPlayer(video, modifier = Modifier.fillMaxSize())
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
                         if (elementsVisible) {
