@@ -8,10 +8,8 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.interop.UIKitView
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExportObjCClass
-import kotlinx.cinterop.ObjCAction
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.allocArrayOf
-import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.useContents
 import kotlinx.cinterop.usePinned
@@ -21,8 +19,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.skia.Image
 import platform.AVFoundation.AVPlayer
+import platform.AVFoundation.AVPlayerItem
 import platform.AVFoundation.AVPlayerLayer
-import platform.AVFoundation.AVPlayerStatusReadyToPlay
 import platform.AVFoundation.currentItem
 import platform.AVFoundation.duration
 import platform.AVFoundation.play
@@ -35,10 +33,8 @@ import platform.Foundation.NSData
 import platform.Foundation.NSDate
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
-import platform.Foundation.NSKeyValueObservingOptionNew
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
-import platform.Foundation.addObserver
 import platform.Foundation.create
 import platform.Foundation.date
 import platform.Foundation.timeIntervalSince1970
@@ -49,7 +45,6 @@ import platform.UIKit.UIEvent
 import platform.UIKit.UIImage
 import platform.UIKit.UIImagePNGRepresentation
 import platform.UIKit.UIView
-import platform.darwin.NSObject
 import platform.posix.memcpy
 
 actual fun cacheBytes(fileName: String, readBytes: () -> ByteArray) {
@@ -86,6 +81,16 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
     val url: NSURL = video.fileName.toURL()
     check(url.exists()) // because cached already
     val player: AVPlayer = remember { AVPlayer(url) }
+
+    /*
+    // For video loop: https://github.com/proto-at-block/bitkey/blob/06c47648dc3241a5f78ceb0cde12315ea84437a1/app/ui/framework/public/src/iosMain/kotlin/build/wallet/ui/components/video/VideoPlayer.ios.kt#L103
+    val item = AVPlayerItem.playerItemWithURL(url)
+    player.replaceCurrentItemWithPlayerItem(item)
+    if (isLooping) {
+        looper = AVPlayerLooper.playerLooperWithPlayer(player as AVQueuePlayer, item)
+    }
+    */
+
 //    println("status - before")
 //    player.observe("status") {
 //        println("status #0: ${player.status}")
@@ -124,27 +129,15 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
         },
         modifier = modifier
     )
-
-    println("scope #0")
-    val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
-    println("scope #1")
     remember {
-        scope.launch {
-            println("scope #2")
-            while(player.status != AVPlayerStatusReadyToPlay) {
-                println("scope #3")
-                delay(30)
-                println("scope #4")
-            }
-            println("scope #5")
-            val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
-            println("time.value: ${time.value}")
-            println("time.timescale: ${time.timescale}")
+        val item: AVPlayerItem = checkNotNull(player.currentItem)
+        val timeInitial: CMTime = item.time
+        item.onupdate(accept = { item.time.value != 0L }) {
+            val time: CMTime = item.time
             video.duration.value = if (time.timescale != 0) time.value / time.timescale else time.value
-            println("video.duration: ${video.duration}")
+            println("times: ${timeInitial.value}, ${time.value}")
         }
     }
-    println("scope #6")
 }
 
 @Composable
@@ -208,3 +201,18 @@ actual fun epochMillis(): Long = memScoped {
 //        }
 //    }
 //}
+
+// quickfix todo improve
+private inline fun <reified T : Any> T.onupdate(crossinline accept: (value: T) -> Boolean, crossinline listener: (value: T) -> Unit) {
+    val value: T = this
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+    scope.launch {
+        while(!accept(value)) {
+            delay(5)
+        }
+        listener(value)
+    }
+}
+
+val AVPlayerItem.time: CMTime
+    get() = duration.useContents { this }
