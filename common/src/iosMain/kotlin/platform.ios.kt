@@ -8,6 +8,13 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.interop.UIKitView
 import kotlinx.cinterop.*
 import org.jetbrains.skia.Image
+import platform.AVFoundation.*
+import platform.AVKit.*
+import platform.CoreGraphics.*
+import platform.Foundation.*
+import platform.QuartzCore.*
+import platform.UIKit.*
+import platform.posix.*
 
 actual fun cacheBytes(fileName: String, readBytes: () -> ByteArray) {
     val url: NSURL = fileName.toURL()
@@ -70,7 +77,7 @@ actual fun ByteArray.bitmap(): ImageBitmap {
 
 private fun String.toURL(): NSURL {
     val documentsDirectory: NSURL = (NSFileManager.defaultManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask) as List<NSURL>).first()
-    val url: NSURL = NSURL.fileURLWithPath(fileName, relativeToURL = documentsDirectory)
+    val url: NSURL = NSURL.fileURLWithPath(this, relativeToURL = documentsDirectory)
     return url
 }
 

@@ -80,7 +80,7 @@ private fun welcome(navigation: Navigation) {
 private fun player(navigation: Navigation) {
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     var appState: AppState by remember { mutableStateOf(EmptyAppState()) }
-    var sheetStep: SheetStep by remember { mutableStateOf(PAY) }
+    var sheetStep: SheetStep by remember { mutableStateOf(PAYMENT) }
     if (appState.isEmpty) {
         coroutineScope.launch(Dispatchers.IO) {
             appState = readAppState()
@@ -90,10 +90,10 @@ private fun player(navigation: Navigation) {
         }
     } else {
         val sheetState: ModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
-        fun nextSheet(nextSheetStep: SheetStep) = coroutineScope.launch {
+        fun updateState(newState: SheetStep) = coroutineScope.launch {
             sheetState.hide()
-            sheetStep = nextSheetStep
-            if (sheetStep != START) {
+            sheetStep = newState
+            if (sheetStep != INACTIVE) {
                 sheetState.show()
             }
         }
@@ -102,39 +102,39 @@ private fun player(navigation: Navigation) {
             sheetState = sheetState,
             sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
             sheetContent = {
-                IconButton(onClick = { coroutineScope.launch { sheetState.hide() } }) {
+                IconButton(onClick = { updateState(INACTIVE) }) {
                     Icon(Icons.Default.Close, contentDescription = null)
                 }
                 when (sheetStep) {
-                    START -> {
-                        // empty
+                    INACTIVE -> {
+                        // hidden
                     }
-                    PAY -> {
+                    PAYMENT -> {
                         Text("PAY")
-                        Button(onClick = { nextSheet(MESSAGE) }) { Text("MESSAGE") }
+                        Button(onClick = { updateState(MESSAGE) }) { Text("MESSAGE") }
                     }
                     MESSAGE -> {
                         Text("MESSAGE")
-                        Button(onClick = { nextSheet(SUCCESS) }) { Text("SUCCESS") }
+                        Button(onClick = { updateState(SUCCESS) }) { Text("SUCCESS") }
                     }
                     SUCCESS -> {
                         Text("SUCCESS")
-                        Button(onClick = { nextSheet(START) }) { Text("START") }
+                        Button(onClick = { updateState(INACTIVE) }) { Text("START") }
                     }
                 }
             }
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 VideoPlayer(modifier = Modifier.fillMaxSize(), appState.author.fileName)
-                Button(onClick = { coroutineScope.launch { sheetStep = PAY; sheetState.show() } }) { Text("Заказать обзор у блогера") }
+                Button(onClick = { coroutineScope.launch { sheetStep = PAYMENT; sheetState.show() } }) { Text("Заказать обзор у блогера") }
             }
         }
     }
 }
 
 private enum class SheetStep {
-    START,
-    PAY,
+    INACTIVE,
+    PAYMENT,
     MESSAGE,
-    SUCCESS
+    SUCCESS,
 }
