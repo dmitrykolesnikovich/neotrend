@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -50,10 +51,9 @@ actual fun String.bitmap(): ImageBitmap {
 @Composable
 actual fun VideoPlayer(video: Video, modifier: Modifier) {
     Box(
-        modifier = Modifier
-        .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { video.onClick() }
-        .fillMaxSize(), contentAlignment = Alignment.Center) {
-        Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier)
+        modifier = modifier.clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { video.onClick() },
+        contentAlignment = Alignment.Center) {
+        Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier = Modifier.wrapContentSize())
     }
     remember {
         val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
