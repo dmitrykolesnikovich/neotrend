@@ -23,5 +23,6 @@ object R {
         const val GREAT: String = "Отлично!"
         const val WELCOME: String = "Доброго времени суток!\nХочу заказать у вас обзор на *(напишите название и подробности мероприятия или оставьте ссылку на карточку мероприятия)*"
         const val WELCOME_FOCUSED: String = "Доброго времени суток!\nХочу заказать у вас обзор на"
+        const val OPEN_VIDEO_BLOGGER: String = "Открыть видео блогера"
     }
 }

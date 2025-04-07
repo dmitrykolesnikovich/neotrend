@@ -50,7 +50,7 @@ fun App() {
 @Composable
 private fun Welcome(navigation: Navigation) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { navigation.navigate("player") }) { Text("Открыть видео блогера") }
+        Button(onClick = { navigation.navigate("player") }) { Text(R.strings.OPEN_VIDEO_BLOGGER) }
     }
 }
 
