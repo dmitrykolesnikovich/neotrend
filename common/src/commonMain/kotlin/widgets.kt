@@ -1,7 +1,6 @@
 package site.neotrend
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -97,4 +96,10 @@ fun AnnotatedTextField(text: String, onValueChange: (String) -> Unit, modifier: 
         modifier = modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
         visualTransformation = ColorsTransformation()
     )
+}
+
+// https://github.com/creativedrewy/KRATE/blob/main/extension/src/commonMain/kotlin/com/solanamobile/krate/extension/ui/CommonComposables.kt#L35
+@Composable
+fun Modifier.keyboardBottomPadding(): Modifier {
+    return padding(bottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding())
 }

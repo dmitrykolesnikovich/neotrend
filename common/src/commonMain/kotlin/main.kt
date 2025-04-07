@@ -100,7 +100,11 @@ private fun Player(navigation: Navigation) {
                 }
             }
             content()
-            Button(modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(4.dp)), onClick = { updateSheetStep(step.next()) }) { Text(step.button) }
+            Button(
+                modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(4.dp)).padding(bottom = 4.dp).keyboardBottomPadding(),
+                onClick = { updateSheetStep(step.next()) }) {
+                Text(step.button)
+            }
         }
     }
 
