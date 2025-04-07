@@ -6,15 +6,42 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.interop.UIKitView
-import kotlinx.cinterop.*
+import kotlinx.cinterop.CValue
+import kotlinx.cinterop.CVariable
+import kotlinx.cinterop.ExportObjCClass
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.allocArrayOf
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.useContents
+import kotlinx.cinterop.usePinned
 import org.jetbrains.skia.Image
-import platform.AVFoundation.*
-import platform.AVKit.*
-import platform.CoreGraphics.*
-import platform.Foundation.*
-import platform.QuartzCore.*
-import platform.UIKit.*
-import platform.posix.*
+import platform.AVFoundation.AVPlayer
+import platform.AVFoundation.AVPlayerLayer
+import platform.AVFoundation.currentItem
+import platform.AVFoundation.duration
+import platform.AVFoundation.play
+import platform.AVFoundation.rate
+import platform.AVKit.AVPlayerViewController
+import platform.CoreGraphics.CGRect
+import platform.CoreMedia.CMTime
+import platform.Foundation.NSBundle
+import platform.Foundation.NSData
+import platform.Foundation.NSDate
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
+import platform.Foundation.create
+import platform.Foundation.date
+import platform.Foundation.timeIntervalSince1970
+import platform.Foundation.writeToURL
+import platform.QuartzCore.CATransaction
+import platform.QuartzCore.kCATransactionDisableActions
+import platform.UIKit.UIEvent
+import platform.UIKit.UIImage
+import platform.UIKit.UIImagePNGRepresentation
+import platform.UIKit.UIView
+import platform.posix.memcpy
 
 actual fun cacheBytes(fileName: String, readBytes: () -> ByteArray) {
     val url: NSURL = fileName.toURL()
@@ -26,8 +53,25 @@ actual fun cacheBytes(fileName: String, readBytes: () -> ByteArray) {
 }
 
 @Composable
-actual fun VideoPlayer(modifier: Modifier, fileName: String) {
-    val url: NSURL = fileName.toURL()
+actual fun VideoPlayer(modifier: Modifier, video: Video) {
+    @ExportObjCClass
+    class PlayerController : AVPlayerViewController {
+
+        @OverrideInit
+        constructor() : super(null, null)
+
+        override fun touchesBegan(touches: Set<*>, withEvent: UIEvent?) {
+            val player: AVPlayer = checkNotNull(player)
+            if (player.rate == 0f) {
+                player.rate = 1f
+            } else {
+                player.rate = 0f
+            }
+        }
+
+    }
+
+    val url: NSURL = video.fileName.toURL()
     check(url.exists())
     val player: AVPlayer = remember { AVPlayer(url) }
     val layer: AVPlayerLayer = remember { AVPlayerLayer() }
@@ -48,6 +92,11 @@ actual fun VideoPlayer(modifier: Modifier, fileName: String) {
             layer.setFrame(rect)
             controller.view.layer.frame = rect
             CATransaction.commit()
+            val time: CMTime = checkNotNull(player.currentItem).duration.kotlinValue
+            video.duration = time.value / time.timescale
+            println("time.value: ${time.value}")
+            println("time.value: ${time.timescale}")
+            println("video.duration: ${video.duration}")
         },
         update = {
             player.play()
@@ -92,26 +141,8 @@ private fun ByteArray.toNSData(): NSData {
     }
 }
 
-@ExportObjCClass
-private class PlayerController : AVPlayerViewController {
-
-    @OverrideInit
-    constructor() : super(null, null)
-
-    override fun touchesBegan(touches: Set<*>, withEvent: UIEvent?) {
-        val player: AVPlayer = checkNotNull(player)
-        if (player.rate == 0f) {
-            player.rate = 1f
-        } else {
-            player.rate = 0f
-        }
-    }
-
-}
-
-// https://stackoverflow.com/a/64254922/909169
-// for native it depends on target platform
-// but posix can be used on MOST (see below) of posix-compatible native targets
 actual fun epochMillis(): Long = memScoped {
-    return NSDate.date().timeIntervalSince1970 * 1000L
+    return NSDate.date().timeIntervalSince1970.toLong() * 1000
 }
+
+inline val <reified T : CVariable> CValue<T>.kotlinValue: T get() = useContents { this }

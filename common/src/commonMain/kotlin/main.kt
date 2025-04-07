@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.*
 import site.neotrend.SheetStep.*
+import site.neotrend.platform.Video
 import site.neotrend.platform.VideoPlayer
 import site.neotrend.platform.bitmap
 import site.neotrend.platform.epochMillis
@@ -109,11 +110,14 @@ private fun Player(navigation: Navigation) {
                 modifier = Modifier.clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { playerClicked() }.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                VideoPlayer(modifier = Modifier.fillMaxSize(), appState.author.fileName)
+                val video: Video = remember { Video(appState.author.fileName, 0) }
+                val videoDuration: Long by remember { mutableStateOf(video.duration) }
+                VideoPlayer(modifier = Modifier.fillMaxSize(), video)
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
                         if (elementsVisible) {
                             CircleImage(appState.avatarBitmap, 128)
+                            Text("$videoDuration")
                             Row(modifier = Modifier.padding(16.dp)) {
                                 Image("eye.svg", 29, 28)
                                 Image("comments.svg", 29, 28)

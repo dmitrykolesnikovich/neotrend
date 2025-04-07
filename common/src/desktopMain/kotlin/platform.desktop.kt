@@ -38,7 +38,7 @@ actual fun String.bitmap(): ImageBitmap {
 }
 
 @Composable
-actual fun VideoPlayer(modifier: Modifier, fileName: String) {
+actual fun VideoPlayer(modifier: Modifier, video: Video) {
     Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier)
 }
 
