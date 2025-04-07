@@ -57,16 +57,25 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
     @ExportObjCClass
     class PlayerController : AVPlayerViewController {
 
+        lateinit var onClick: () -> Unit
+
         @OverrideInit
         constructor() : super(null, null)
 
         override fun touchesBegan(touches: Set<*>, withEvent: UIEvent?) {
+            onClick()
             val player: AVPlayer = checkNotNull(player)
             if (player.rate == 0f) {
                 player.rate = 1f
             } else {
                 player.rate = 0f
             }
+
+            val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
+            println("time.value: ${time.value}")
+            println("time.timescale: ${time.timescale}")
+            video.duration = if (time.timescale != 0) time.value / time.timescale else time.value
+            println("video.duration: ${video.duration}")
         }
 
     }
@@ -78,12 +87,11 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
     val controller: PlayerController = remember { PlayerController() }
     controller.player = player
     controller.showsPlaybackControls = false
+    controller.onClick = video.onClick
     layer.player = player
     UIKitView(
         factory = {
-            UIView().apply {
-                addSubview(controller.view)
-            }
+            UIView().apply { addSubview(controller.view) }
         },
         onResize = { view: UIView, rect: CValue<CGRect> ->
             CATransaction.begin()
@@ -92,11 +100,6 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
             layer.setFrame(rect)
             controller.view.layer.frame = rect
             CATransaction.commit()
-            val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
-            video.duration = time.value / time.timescale
-            println("time.value: ${time.value}")
-            println("time.value: ${time.timescale}")
-            println("video.duration: ${video.duration}")
         },
         update = {
             player.play()

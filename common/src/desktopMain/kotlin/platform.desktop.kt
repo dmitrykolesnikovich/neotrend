@@ -1,7 +1,13 @@
 package site.neotrend.platform
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
@@ -39,7 +45,11 @@ actual fun String.bitmap(): ImageBitmap {
 
 @Composable
 actual fun VideoPlayer(modifier: Modifier, video: Video) {
-    Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier)
+    Box(modifier = Modifier
+            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { video.onClick() }
+            .fillMaxSize(), contentAlignment = Alignment.Center) {
+        Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier)
+    }
 }
 
 actual fun cacheBytes(fileName: String, readBytes: () -> ByteArray) {

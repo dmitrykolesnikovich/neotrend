@@ -16,4 +16,4 @@ expect fun ByteArray.bitmap(): ImageBitmap
 
 expect fun epochMillis(): Long
 
-class Video(val fileName: String, var duration: Long)
+class Video(val fileName: String, var duration: Long, val onClick: () -> Unit)
