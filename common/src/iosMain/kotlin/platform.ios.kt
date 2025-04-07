@@ -108,3 +108,10 @@ private class PlayerController : AVPlayerViewController {
     }
 
 }
+
+// https://stackoverflow.com/a/64254922/909169
+// for native it depends on target platform
+// but posix can be used on MOST (see below) of posix-compatible native targets
+actual fun epochMillis(): Long = memScoped {
+    return NSDate.date().timeIntervalSince1970 * 1000L
+}

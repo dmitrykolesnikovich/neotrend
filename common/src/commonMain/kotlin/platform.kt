@@ -13,3 +13,5 @@ expect fun VideoPlayer(modifier: Modifier, fileName: String)
 expect fun String.bitmap(): ImageBitmap
 
 expect fun ByteArray.bitmap(): ImageBitmap
+
+expect fun epochMillis(): Long

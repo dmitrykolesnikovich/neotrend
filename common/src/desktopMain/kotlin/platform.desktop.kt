@@ -51,3 +51,6 @@ actual fun cacheBytes(fileName: String, readBytes: () -> ByteArray) {
         file.writeBytes(bytes)
     }
 }
+
+// for jvm
+actual fun epochMillis(): Long = System.currentTimeMillis()
