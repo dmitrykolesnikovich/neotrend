@@ -96,7 +96,7 @@ private fun Player(navigation: Navigation) {
     @Composable
     fun SheetView(step: SheetStep, content: @Composable () -> Unit) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.padding(16.dp)) {
-            Box(modifier = Modifier.fillMaxWidth().padding(0.dp)) {
+            Box(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                 Text(step.title, style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 18.sp), modifier = Modifier.align(alignment = Alignment.Center))
                 IconButton(onClick = { updateSheetStep(INITIAL) }, modifier = Modifier.align(alignment = Alignment.CenterEnd).size(24.dp)) {
                     Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(24.dp), tint = Color.DarkGray)
@@ -121,7 +121,22 @@ private fun Player(navigation: Navigation) {
                         message = WELCOME
                     }
                     PAYMENT -> {
-                        Text("PAYMENT")
+                        Column(modifier = Modifier.fillMaxWidth().background(color = Color(0xffF3F2F8), shape = RoundedCornerShape(12.dp)).padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
+                            Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                                Text("Блогер", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
+                                Text("@${appState.author.authorDto.name}", modifier = Modifier.align(alignment = Alignment.CenterEnd), style = TextStyle(fontWeight = FontWeight.Normal, color = Color.DarkGray, fontSize = 14.sp))
+                            }
+                            Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
+                            Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                                Text("Рейтинг", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
+                                Text("4,1", modifier = Modifier.align(alignment = Alignment.CenterEnd), style = TextStyle(fontWeight = FontWeight.Normal, color = Color.DarkGray, fontSize = 14.sp))
+                            }
+                            Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
+                            Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                                Text("Стоимость обзора", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
+                                Text("120 BYN", modifier = Modifier.align(alignment = Alignment.CenterEnd), style = TextStyle(fontWeight = FontWeight.Normal, color = Color.DarkGray, fontSize = 14.sp))
+                            }
+                        }
                     }
                     MESSAGE -> {
                         AnnotatedText("На вашем балансе заморожено 120 рублей, до момента одобрения вами обзора, присланного блогером **@${appState.author.authorDto.name}**. Блогеру отправлен запрос.")
@@ -133,10 +148,10 @@ private fun Player(navigation: Navigation) {
                         )
                         println("main: $message")
                         AnnotatedTextField(message, onValueChange = { message = it }, modifier = Modifier.fillMaxWidth().onFocusChanged {
-                                if (it.isFocused) {
-                                    message = WELCOME_FOCUSED
-                                }
-                            },)
+                            if (it.isFocused) {
+                                message = WELCOME_FOCUSED
+                            }
+                        },)
                     }
                     SUCCESS -> {
                         AnnotatedText("Ваше сообщение **@${appState.author.authorDto.name}** отправлено.")
