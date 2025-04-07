@@ -5,50 +5,41 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import site.neotrend.SheetStep.INITIAL
-import site.neotrend.SheetStep.MESSAGE
-import site.neotrend.SheetStep.PAYMENT
-import site.neotrend.SheetStep.SUCCESS
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.*
+import site.neotrend.SheetStep.*
 import site.neotrend.platform.Video
 import site.neotrend.platform.VideoPlayer
 import site.neotrend.platform.bitmap
 import site.neotrend.platform.epochMillis
 
-private enum class SheetStep {
-    INITIAL,
-    PAYMENT,
-    MESSAGE,
-    SUCCESS,
+enum class SheetStep(val button: String, val title: String) {
+    INITIAL("", ""),
+    PAYMENT("Оплатить", "Рейтинг блогера"),
+    MESSAGE("Отправить сообщение", "Отправьте сообщение"),
+    SUCCESS("Понятно", "Отлично!"),
+}
+
+fun SheetStep.next(): SheetStep = when (this) {
+    INITIAL -> PAYMENT
+    PAYMENT -> MESSAGE
+    MESSAGE -> SUCCESS
+    SUCCESS -> INITIAL
 }
 
 @Composable
@@ -101,6 +92,20 @@ private fun Player(navigation: Navigation) {
         }
     }
 
+    @Composable
+    fun SheetView(step: SheetStep, content: @Composable () -> Unit) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.padding(16.dp)) {
+            Box(modifier = Modifier.fillMaxWidth().padding(0.dp)) {
+                Text(step.title, style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 18.sp), modifier = Modifier.align(alignment = Alignment.Center))
+                IconButton(onClick = { updateSheetStep(INITIAL) }, modifier = Modifier.align(alignment = Alignment.CenterEnd).size(24.dp)) {
+                    Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(24.dp), tint = Color.DarkGray)
+                }
+            }
+            content()
+            Button(modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(4.dp)), onClick = { updateSheetStep(step.next()) }) { Text(step.button) }
+        }
+    }
+
     if (appState.isEmpty) {
         updateAppState()
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -108,26 +113,29 @@ private fun Player(navigation: Navigation) {
         }
     } else {
         ModalBottomSheetLayout(sheetState = sheetState, sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp), sheetContent = {
-            IconButton(onClick = { updateSheetStep(INITIAL) }) {
-                Icon(Icons.Default.Close, contentDescription = null)
+            SheetView(sheetStep) {
+                when (sheetStep) {
+                    INITIAL -> {
+                        // hidden
+                    }
+                    PAYMENT -> {
+                        Text("PAYMENT")
+                    }
+                    MESSAGE -> {
+                        AnnotatedText("На вашем балансе заморожено 120 рублей, до момента одобрения вами обзора, присланного блогером **@${appState.author.authorDto.name}**. Блогеру отправлен запрос.")
+                        Text("ВАШЕ СООБЩЕНИЕ", style = TextStyle(color = Color.LightGray, fontSize = 12.sp, fontWeight = FontWeight.Bold), modifier = Modifier.padding(top = 4.dp).fillMaxWidth(), textAlign = TextAlign.Start)
+                        TextField(
+                            "!!!",
+                            modifier = Modifier.fillMaxWidth(),
+                            onValueChange = {},
+                        )
+                    }
+                    SUCCESS -> {
+                        AnnotatedText("Ваше сообщение **@${appState.author.authorDto.name}** отправлено.")
+                    }
+                }
             }
-            when (sheetStep) {
-                INITIAL -> {
-                    // hidden
-                }
-                PAYMENT -> {
-                    Text("PAYMENT")
-                    Button(onClick = { updateSheetStep(MESSAGE) }) { Text("MESSAGE") }
-                }
-                MESSAGE -> {
-                    Text("MESSAGE")
-                    Button(onClick = { updateSheetStep(SUCCESS) }) { Text("SUCCESS") }
-                }
-                SUCCESS -> {
-                    Text("SUCCESS")
-                    Button(onClick = { updateSheetStep(INITIAL) }) { Text("INITIAL") }
-                }
-            }
+
         }) {
             Box(modifier = Modifier.fillMaxSize().background(color = Color.Black), contentAlignment = Alignment.Center) {
                 val video: Video = remember {
