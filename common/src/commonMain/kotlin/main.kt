@@ -3,9 +3,10 @@ package site.neotrend
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
+import site.neotrend.SheetStep.*
 import site.neotrend.platform.VideoPlayer
 
 @Composable
@@ -69,14 +71,16 @@ fun App() {
 @Composable
 private fun welcome(navigation: Navigation) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { navigation.navigate("player") }) { Text("Открыть видео блоггера") }
+        Button(onClick = { navigation.navigate("player") }) { Text("Открыть видео блогера") }
     }
 }
 
 @Composable
+@OptIn(ExperimentalMaterialApi::class)
 private fun player(navigation: Navigation) {
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     var appState: AppState by remember { mutableStateOf(EmptyAppState()) }
+    var sheetStep: SheetStep by remember { mutableStateOf(PAY) }
     if (appState.isEmpty) {
         coroutineScope.launch(Dispatchers.IO) {
             appState = readAppState()
@@ -85,8 +89,52 @@ private fun player(navigation: Navigation) {
             CircularProgressIndicator(modifier = Modifier.size(64.dp))
         }
     } else {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            VideoPlayer(modifier = Modifier.fillMaxSize(), appState.author.fileName)
+        val sheetState: ModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+        fun nextSheet(nextSheetStep: SheetStep) = coroutineScope.launch {
+            sheetState.hide()
+            sheetStep = nextSheetStep
+            if (sheetStep != START) {
+                sheetState.show()
+            }
+        }
+
+        ModalBottomSheetLayout(
+            sheetState = sheetState,
+            sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+            sheetContent = {
+                IconButton(onClick = { coroutineScope.launch { sheetState.hide() } }) {
+                    Icon(Icons.Default.Close, contentDescription = null)
+                }
+                when (sheetStep) {
+                    START -> {
+                        // empty
+                    }
+                    PAY -> {
+                        Text("PAY")
+                        Button(onClick = { nextSheet(MESSAGE) }) { Text("MESSAGE") }
+                    }
+                    MESSAGE -> {
+                        Text("MESSAGE")
+                        Button(onClick = { nextSheet(SUCCESS) }) { Text("SUCCESS") }
+                    }
+                    SUCCESS -> {
+                        Text("SUCCESS")
+                        Button(onClick = { nextSheet(START) }) { Text("START") }
+                    }
+                }
+            }
+        ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                VideoPlayer(modifier = Modifier.fillMaxSize(), appState.author.fileName)
+                Button(onClick = { coroutineScope.launch { sheetStep = PAY; sheetState.show() } }) { Text("Заказать обзор у блогера") }
+            }
         }
     }
+}
+
+private enum class SheetStep {
+    START,
+    PAY,
+    MESSAGE,
+    SUCCESS
 }
