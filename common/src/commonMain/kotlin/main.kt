@@ -5,19 +5,19 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -112,6 +112,10 @@ private fun Player(navigation: Navigation) {
             CircularProgressIndicator(modifier = Modifier.size(64.dp))
         }
     } else {
+        var message: String by remember { mutableStateOf("""
+        Доброго времени суток!
+        Хочу заказать у вас обзор на *(напишите название и подробности мероприятия или оставьте ссылку на карточку мероприятия)*
+        """.trimIndent())}
         ModalBottomSheetLayout(sheetState = sheetState, sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp), sheetContent = {
             SheetView(sheetStep) {
                 when (sheetStep) {
@@ -123,12 +127,14 @@ private fun Player(navigation: Navigation) {
                     }
                     MESSAGE -> {
                         AnnotatedText("На вашем балансе заморожено 120 рублей, до момента одобрения вами обзора, присланного блогером **@${appState.author.authorDto.name}**. Блогеру отправлен запрос.")
-                        Text("ВАШЕ СООБЩЕНИЕ", style = TextStyle(color = Color.LightGray, fontSize = 12.sp, fontWeight = FontWeight.Bold), modifier = Modifier.padding(top = 4.dp).fillMaxWidth(), textAlign = TextAlign.Start)
-                        TextField(
-                            "!!!",
-                            modifier = Modifier.fillMaxWidth(),
-                            onValueChange = {},
+                        Text(
+                            "ВАШЕ СООБЩЕНИЕ",
+                            style = TextStyle(color = Color.LightGray, fontSize = 12.sp, fontWeight = FontWeight.Bold),
+                            modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
+                            textAlign = TextAlign.Start
                         )
+                        println("main: $message")
+                        AnnotatedTextField(message, onValueChange = { message = it }, modifier = Modifier.fillMaxWidth())
                     }
                     SUCCESS -> {
                         AnnotatedText("Ваше сообщение **@${appState.author.authorDto.name}** отправлено.")
