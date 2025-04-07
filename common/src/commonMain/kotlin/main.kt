@@ -13,6 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.TextStyle
@@ -112,15 +113,12 @@ private fun Player(navigation: Navigation) {
             CircularProgressIndicator(modifier = Modifier.size(64.dp))
         }
     } else {
-        var message: String by remember { mutableStateOf("""
-        Доброго времени суток!
-        Хочу заказать у вас обзор на *(напишите название и подробности мероприятия или оставьте ссылку на карточку мероприятия)*
-        """.trimIndent())}
+        var message: String by remember { mutableStateOf(WELCOME) }
         ModalBottomSheetLayout(sheetState = sheetState, sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp), sheetContent = {
             SheetView(sheetStep) {
                 when (sheetStep) {
                     INITIAL -> {
-                        // hidden
+                        message = WELCOME
                     }
                     PAYMENT -> {
                         Text("PAYMENT")
@@ -134,14 +132,17 @@ private fun Player(navigation: Navigation) {
                             textAlign = TextAlign.Start
                         )
                         println("main: $message")
-                        AnnotatedTextField(message, onValueChange = { message = it }, modifier = Modifier.fillMaxWidth())
+                        AnnotatedTextField(message, onValueChange = { message = it }, modifier = Modifier.fillMaxWidth().onFocusChanged {
+                                if (it.isFocused) {
+                                    message = WELCOME_FOCUSED
+                                }
+                            },)
                     }
                     SUCCESS -> {
                         AnnotatedText("Ваше сообщение **@${appState.author.authorDto.name}** отправлено.")
                     }
                 }
             }
-
         }) {
             Box(modifier = Modifier.fillMaxSize().background(color = Color.Black), contentAlignment = Alignment.Center) {
                 val video: Video = remember {

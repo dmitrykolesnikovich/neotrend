@@ -2,22 +2,18 @@ package site.neotrend
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.onClick
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -52,11 +48,16 @@ fun AnnotatedText(text: String, modifier: Modifier = Modifier, fontSize: TextUni
             )
         }
     }
-    Text(modifier = modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 12.dp), fontSize = fontSize, text = annotatedString, textAlign = TextAlign.Center)
+    Text(
+        modifier = modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+        fontSize = fontSize,
+        text = annotatedString,
+        textAlign = TextAlign.Center
+    )
 }
 
 @Composable
-fun AnnotatedTextField(text: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, fontSize: TextUnit = 16.sp, onfocus: () -> Unit = {}) {
+fun AnnotatedTextField(text: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, fontSize: TextUnit = 16.sp) {
     var results: MatchResult? = italicRegex.find(text)
     val keywords: ArrayList<String> = ArrayList()
     while (results != null) {
@@ -75,19 +76,25 @@ fun AnnotatedTextField(text: String, onValueChange: (String) -> Unit, modifier: 
         matches.add(match)
     }
 
-    val annotatedString: AnnotatedString = buildAnnotatedString {
-        append(result)
-        ranges.forEach {
-            addStyle(
-                style = SpanStyle(fontWeight = FontWeight.Normal, color = Color.Gray, fontSize = fontSize.times(0.95)),
-                start = it.first,
-                end = it.last
-            )
+    class ColorsTransformation : VisualTransformation {
+        override fun filter(text: AnnotatedString): TransformedText {
+            val annotatedString: AnnotatedString = buildAnnotatedString {
+                append(result)
+                ranges.forEach {
+                    addStyle(
+                        style = SpanStyle(fontWeight = FontWeight.Normal, color = Color.Gray, fontSize = fontSize.times(0.95)),
+                        start = it.first,
+                        end = it.last
+                    )
+                }
+            }
+            return TransformedText(annotatedString, OffsetMapping.Identity)
         }
     }
     TextField(
-        value = TextFieldValue(annotatedString),
-        onValueChange = { onValueChange(it.text) },
-        modifier = modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 12.dp)
+        value = result,
+        onValueChange = { onValueChange(it) },
+        modifier = modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+        visualTransformation = ColorsTransformation()
     )
 }
