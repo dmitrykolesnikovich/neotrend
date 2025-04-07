@@ -27,9 +27,9 @@ import site.neotrend.platform.*
 
 enum class SheetStep(val button: String, val title: String) {
     INITIAL("", ""),
-    PAYMENT(R.strings.PAY, R.strings.BLOGGER_RATING),
-    MESSAGE(R.strings.SEND_MESSAGE, R.strings.PLEASE_SEND_YOUR_MESSAGE),
-    SUCCESS(R.strings.GOT_IT, R.strings.GREAT),
+    PAYMENT(R.strings.pay, R.strings.bloggerRating),
+    MESSAGE(R.strings.sendMessage, R.strings.sendYourMessage),
+    SUCCESS(R.strings.gotIt, R.strings.great),
 }
 
 fun SheetStep.next(): SheetStep = when (this) {
@@ -50,7 +50,7 @@ fun App() {
 @Composable
 private fun Welcome(navigation: Navigation) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { navigation.navigate("player") }) { Text(R.strings.OPEN_VIDEO_BLOGGER) }
+        Button(onClick = { navigation.navigate("player") }) { Text(R.strings.openVideo) }
     }
 }
 
@@ -120,7 +120,7 @@ private fun Player(navigation: Navigation) {
             CircularProgressIndicator(modifier = Modifier.size(64.dp))
         }
     } else {
-        var message: String by remember { mutableStateOf(R.strings.WELCOME) }
+        var message: String by remember { mutableStateOf(R.strings.welcome) }
         ModalBottomSheetLayout(sheetState = sheetState, sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp), sheetContent = {
             SheetView(sheetStep, onClick = {
                 if (sheetStep == MESSAGE) {
@@ -130,7 +130,7 @@ private fun Player(navigation: Navigation) {
                 val author: Author = appState.author
                 when (sheetStep) {
                     INITIAL -> {
-                        message = R.strings.WELCOME
+                        message = R.strings.welcome
                     }
                     PAYMENT -> {
                         Column(
@@ -139,7 +139,7 @@ private fun Player(navigation: Navigation) {
                         ) {
                             Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {                                
                                 Text(
-                                    R.strings.BLOGGER,
+                                    R.strings.blogger,
                                     modifier = Modifier.align(alignment = Alignment.CenterStart),
                                     style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
                                 )
@@ -152,7 +152,7 @@ private fun Player(navigation: Navigation) {
                             Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
                             Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {                                
                                 Text(
-                                    R.strings.RATING,
+                                    R.strings.rating,
                                     modifier = Modifier.align(alignment = Alignment.CenterStart),
                                     style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
                                 )
@@ -165,17 +165,17 @@ private fun Player(navigation: Navigation) {
                                     val activeStarCount: Int = clamp(author.rating.toInt(), 0, 5)
                                     val inactiveStarCount: Int = 5 - activeStarCount
                                     repeat(activeStarCount) {
-                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = R.colors.activeStarColor)
+                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = R.colors.activeStar)
                                     }
                                     repeat(inactiveStarCount) {
-                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = R.colors.inactiveStarColor)
+                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = R.colors.inactiveStar)
                                     }
                                 }
                             }
                             Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
                             Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {                                
                                 Text(
-                                    R.strings.REVIEW_PRICE,
+                                    R.strings.reviewPrice,
                                     modifier = Modifier.align(alignment = Alignment.CenterStart),
                                     style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
                                 )
@@ -188,9 +188,9 @@ private fun Player(navigation: Navigation) {
                         }
                     }
                     MESSAGE -> {
-                        AnnotatedText(R.strings.MONEY_FREEZE(author))
+                        AnnotatedText(R.strings.moneyFrozen(author))
                         Text(
-                            R.strings.YOUR_MESSAGE,
+                            R.strings.yourMessage,
                             style = TextStyle(color = Color.LightGray, fontSize = 12.sp, fontWeight = FontWeight.Bold),
                             modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
                             textAlign = TextAlign.Start
@@ -199,13 +199,13 @@ private fun Player(navigation: Navigation) {
                             message, onValueChange = { message = it },
                             modifier = Modifier.fillMaxWidth().onFocusChanged {
                                 if (it.isFocused) {
-                                    message = R.strings.WELCOME_FOCUSED
+                                    message = R.strings.welcomeFocused
                                 }
                             },
                         )
                     }
                     SUCCESS -> {
-                        AnnotatedText(R.strings.YOUR_MESSAGE_SENT(author))
+                        AnnotatedText(R.strings.yourMessageSend(author))
                     }
                 }
             }
@@ -258,7 +258,7 @@ private fun Player(navigation: Navigation) {
                             onClick = { updateSheetStep(PAYMENT) },
                             modifier = Modifier.fillMaxWidth().height(80.dp).padding(bottom = 20.dp).clip(shape = RoundedCornerShape(8.dp))
                         ) {                            
-                            Text(R.strings.MAKE_ORDER_TO_BLOGGER, fontSize = 20.sp)
+                            Text(R.strings.makeOrder, fontSize = 20.sp)
                         }
                     }
                 }
