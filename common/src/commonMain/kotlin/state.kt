@@ -23,7 +23,8 @@ data class Author(
     val createdDate: String,
     val fileName: String,
     val statistics: AuthorStatistics,
-    val authorDto: AuthorDto
+    val authorDto: AuthorDto,
+    val rating: Float = 3.78f,
 )
 
 @Serializable

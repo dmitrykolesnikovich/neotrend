@@ -24,10 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.*
 import site.neotrend.SheetStep.*
-import site.neotrend.platform.Video
-import site.neotrend.platform.VideoPlayer
-import site.neotrend.platform.bitmap
-import site.neotrend.platform.epochMillis
+import site.neotrend.platform.*
 
 enum class SheetStep(val button: String, val title: String) {
     INITIAL("", ""),
@@ -116,30 +113,56 @@ private fun Player(navigation: Navigation) {
         var message: String by remember { mutableStateOf(WELCOME) }
         ModalBottomSheetLayout(sheetState = sheetState, sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp), sheetContent = {
             SheetView(sheetStep) {
+                val author: Author = appState.author
                 when (sheetStep) {
                     INITIAL -> {
                         message = WELCOME
                     }
                     PAYMENT -> {
-                        Column(modifier = Modifier.fillMaxWidth().background(color = Color(0xffF3F2F8), shape = RoundedCornerShape(12.dp)).padding(8.dp), verticalArrangement = Arrangement.SpaceEvenly) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().background(color = Color(0xffF3F2F8), shape = RoundedCornerShape(12.dp))
+                                .padding(end = 8.dp, start = 8.dp, top = 0.dp, bottom = 0.dp), verticalArrangement = Arrangement.SpaceEvenly
+                        ) {
                             Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                                 Text("Блогер", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
-                                Text("@${appState.author.authorDto.name}", modifier = Modifier.align(alignment = Alignment.CenterEnd), style = TextStyle(fontWeight = FontWeight.Normal, color = Color.DarkGray, fontSize = 14.sp))
+                                Text(
+                                    "@${author.authorDto.name}",
+                                    modifier = Modifier.align(alignment = Alignment.CenterEnd),
+                                    style = TextStyle(fontWeight = FontWeight.Normal, color = Color.DarkGray, fontSize = 14.sp)
+                                )
                             }
                             Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
                             Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                                 Text("Рейтинг", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
-                                Text("4,1", modifier = Modifier.align(alignment = Alignment.CenterEnd), style = TextStyle(fontWeight = FontWeight.Normal, color = Color.DarkGray, fontSize = 14.sp))
+                                Row(modifier = Modifier.align(alignment = Alignment.CenterEnd), verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        author.rating.toText(),
+                                        style = TextStyle(fontWeight = FontWeight.Normal, color = Color.DarkGray, fontSize = 14.sp),
+                                        modifier = Modifier.padding(end = 4.dp)
+                                    )
+                                    val activeStarCount: Int = clamp(author.rating.toInt(), 0, 5)
+                                    val inactiveStarCount: Int = 5 - activeStarCount
+                                    repeat(activeStarCount) {
+                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = activeStarColor)
+                                    }
+                                    repeat(inactiveStarCount) {
+                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = inactiveStarColor)
+                                    }
+                                }
                             }
                             Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
                             Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                                 Text("Стоимость обзора", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
-                                Text("120 BYN", modifier = Modifier.align(alignment = Alignment.CenterEnd), style = TextStyle(fontWeight = FontWeight.Normal, color = Color.DarkGray, fontSize = 14.sp))
+                                Text(
+                                    "120 BYN",
+                                    modifier = Modifier.align(alignment = Alignment.CenterEnd),
+                                    style = TextStyle(fontWeight = FontWeight.Normal, color = Color.DarkGray, fontSize = 14.sp)
+                                )
                             }
                         }
                     }
                     MESSAGE -> {
-                        AnnotatedText("На вашем балансе заморожено 120 рублей, до момента одобрения вами обзора, присланного блогером **@${appState.author.authorDto.name}**. Блогеру отправлен запрос.")
+                        AnnotatedText("На вашем балансе заморожено 120 рублей, до момента одобрения вами обзора, присланного блогером **@${author.authorDto.name}**. Блогеру отправлен запрос.")
                         Text(
                             "ВАШЕ СООБЩЕНИЕ",
                             style = TextStyle(color = Color.LightGray, fontSize = 12.sp, fontWeight = FontWeight.Bold),
@@ -147,14 +170,17 @@ private fun Player(navigation: Navigation) {
                             textAlign = TextAlign.Start
                         )
                         println("main: $message")
-                        AnnotatedTextField(message, onValueChange = { message = it }, modifier = Modifier.fillMaxWidth().onFocusChanged {
-                            if (it.isFocused) {
-                                message = WELCOME_FOCUSED
-                            }
-                        },)
+                        AnnotatedTextField(
+                            message, onValueChange = { message = it },
+                            modifier = Modifier.fillMaxWidth().onFocusChanged {
+                                if (it.isFocused) {
+                                    message = WELCOME_FOCUSED
+                                }
+                            },
+                        )
                     }
                     SUCCESS -> {
-                        AnnotatedText("Ваше сообщение **@${appState.author.authorDto.name}** отправлено.")
+                        AnnotatedText("Ваше сообщение **@${author.authorDto.name}** отправлено.")
                     }
                 }
             }
@@ -234,10 +260,14 @@ private fun Int.toCountText(): String {
         return count.toString()
     } else if (count < 10000) {
         val thousands: Float = count / 1000.0f
-        val thousandsText: String = thousands.toString().replace(".", ",").substring(0, 3)
+        val thousandsText: String = thousands.toText().substring(0, 3)
         return "$thousandsText тыс."
     } else {
         val thousands: Int = count / 1000
         return "$thousands тыс."
     }
+}
+
+private fun Float.toText(): String {
+    return toString().replace(".", ",")
 }
