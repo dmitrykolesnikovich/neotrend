@@ -11,9 +11,14 @@ import kotlinx.cinterop.ExportObjCClass
 import kotlinx.cinterop.ObjCAction
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.allocArrayOf
+import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.useContents
 import kotlinx.cinterop.usePinned
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.skia.Image
 import platform.AVFoundation.AVPlayer
 import platform.AVFoundation.AVPlayerLayer
@@ -29,17 +34,13 @@ import platform.Foundation.NSBundle
 import platform.Foundation.NSData
 import platform.Foundation.NSDate
 import platform.Foundation.NSDocumentDirectory
-import platform.Foundation.NSException
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSKeyValueObservingOptionNew
-import platform.Foundation.NSKeyValueObservingOptions
-import platform.Foundation.NSSelectorFromString
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.addObserver
 import platform.Foundation.create
 import platform.Foundation.date
-import platform.Foundation.observeValueForKeyPath
 import platform.Foundation.timeIntervalSince1970
 import platform.Foundation.writeToURL
 import platform.QuartzCore.CATransaction
@@ -85,20 +86,20 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
     val url: NSURL = video.fileName.toURL()
     check(url.exists()) // because cached already
     val player: AVPlayer = remember { AVPlayer(url) }
-    println("status - before")
-    player.observe("status") {
-        println("status #0: ${player.status}")
-        if (player.status == AVPlayerStatusReadyToPlay) {
-            println("status #1")
-            val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
-            println("time.value: ${time.value}")
-            println("time.timescale: ${time.timescale}")
-            video.duration = if (time.timescale != 0) time.value / time.timescale else time.value
-            println("video.duration: ${video.duration}")
-        }
-        println("status #2")
-    }
-    println("status - after")
+//    println("status - before")
+//    player.observe("status") {
+//        println("status #0: ${player.status}")
+//        if (player.status == AVPlayerStatusReadyToPlay) {
+//            println("status #1")
+//            val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
+//            println("time.value: ${time.value}")
+//            println("time.timescale: ${time.timescale}")
+//            video.duration = if (time.timescale != 0) time.value / time.timescale else time.value
+//            println("video.duration: ${video.duration}")
+//        }
+//        println("status #2")
+//    }
+//    println("status - after")
 
     val layer: AVPlayerLayer = remember { AVPlayerLayer() }
     val controller: PlayerController = remember { PlayerController() }
@@ -123,6 +124,25 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
         },
         modifier = modifier
     )
+
+    println("scope #0")
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+    println("scope #1")
+    scope.launch {
+        println("scope #2")
+        while(player.status != AVPlayerStatusReadyToPlay) {
+            println("scope #3")
+            delay(300)
+            println("scope #4")
+        }
+        println("scope #5")
+        val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
+        println("time.value: ${time.value}")
+        println("time.timescale: ${time.timescale}")
+        video.duration = if (time.timescale != 0) time.value / time.timescale else time.value
+        println("video.duration: ${video.duration}")
+        println("scope #6")
+    }
 }
 
 @Composable
@@ -165,29 +185,24 @@ actual fun epochMillis(): Long = memScoped {
     return NSDate.date().timeIntervalSince1970.toLong() * 1000
 }
 
-private fun NSObject.observe(keyPath: String, action: () -> Unit) {
-    try {
-        addObserver(action.target, keyPath, NSKeyValueObservingOptionNew, action.selector)
-    } catch (e: Throwable) {
-        println("*** [platform.ios] NSObject.observe ***")
-        e.printStackTrace()
-    }
-}
-
-@Suppress("UnusedReceiverParameter")
-private val (() -> Unit).selector
-    get() = NSSelectorFromString("action")
-
-@Suppress("unused")
-private val (() -> Unit).target
-    get() = object : NSObject() {
-        @ObjCAction
-        fun action() {
-            try {
-                invoke()
-            } catch (e: Throwable) {
-                println("*** [platform.ios] target ***")
-                e.printStackTrace()
-            }
-        }
-    }
+//private fun NSObject.observe(keyPath: String, listener: () -> Unit) = memScoped {
+//    try {
+//        addObserver(Observer(listener), keyPath, NSKeyValueObservingOptionNew, Observer::action.name.cstr.getPointer(this))
+//    } catch (e: Throwable) {
+//        println("*** [platform.ios] NSObject.observe ***")
+//        e.printStackTrace()
+//    }
+//}
+//
+//@ExportObjCClass
+//private class Observer(val listener: () -> Unit) : NSObject() {
+//    @ObjCAction
+//    fun action() {
+//        try {
+//            listener()
+//        } catch (e: Throwable) {
+//            println("*** [platform.ios] target ***")
+//            e.printStackTrace()
+//        }
+//    }
+//}
