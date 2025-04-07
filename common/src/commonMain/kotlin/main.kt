@@ -142,13 +142,13 @@ private fun Player(navigation: Navigation) {
                         playerClicked()
                     }
                 }
-//                val videoDuration: Long by remember { mutableStateOf(video.duration) }
+                val videoDuration: Long by remember { mutableStateOf(video.duration) }
                 VideoPlayer(modifier = Modifier.fillMaxSize(), video)
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
                         if (elementsVisible) {
                             CircleImage(appState.avatarBitmap, 128)
-//                            Text("$videoDuration")
+                            Text("$videoDuration")
                             Row(modifier = Modifier.padding(16.dp)) {
                                 Image("eye.svg", 29, 28)
                                 Image("comments.svg", 29, 28)

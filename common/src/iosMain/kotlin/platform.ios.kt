@@ -86,12 +86,20 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
     val url: NSURL = video.fileName.toURL()
     check(url.exists()) // because cached already
     val player: AVPlayer = remember { AVPlayer(url) }
+//    println("status - before")
 //    player.observe("status") {
+//        println("status #0: ${player.status}")
 //        if (player.status == AVPlayerStatusReadyToPlay) {
+//            println("status #1")
 //            val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
+//            println("time.value: ${time.value}")
+//            println("time.timescale: ${time.timescale}")
 //            video.duration = if (time.timescale != 0) time.value / time.timescale else time.value
+//            println("video.duration: ${video.duration}")
 //        }
+//        println("status #2")
 //    }
+//    println("status - after")
 
     val layer: AVPlayerLayer = remember { AVPlayerLayer() }
     val controller: PlayerController = remember { PlayerController() }
@@ -117,14 +125,26 @@ actual fun VideoPlayer(modifier: Modifier, video: Video) {
         modifier = modifier
     )
 
+    println("scope #0")
     val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
-    scope.launch {
-        while(player.status != AVPlayerStatusReadyToPlay) {
-            delay(300)
+    println("scope #1")
+    remember {
+        scope.launch {
+            println("scope #2")
+            while(player.status != AVPlayerStatusReadyToPlay) {
+                println("scope #3")
+                delay(30)
+                println("scope #4")
+            }
+            println("scope #5")
+            val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
+            println("time.value: ${time.value}")
+            println("time.timescale: ${time.timescale}")
+            video.duration = if (time.timescale != 0) time.value / time.timescale else time.value
+            println("video.duration: ${video.duration}")
         }
-        val time: CMTime = checkNotNull(player.currentItem).duration.useContents { this }
-        video.duration = if (time.timescale != 0) time.value / time.timescale else time.value
     }
+    println("scope #6")
 }
 
 @Composable
