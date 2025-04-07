@@ -9,7 +9,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,9 +27,9 @@ import site.neotrend.platform.*
 
 enum class SheetStep(val button: String, val title: String) {
     INITIAL("", ""),
-    PAYMENT("Оплатить", "Рейтинг блогера"),
-    MESSAGE("Отправить сообщение", "Отправьте сообщение"),
-    SUCCESS("Понятно", "Отлично!"),
+    PAYMENT(R.strings.PAY, R.strings.BLOGGER_RATING),
+    MESSAGE(R.strings.SEND_MESSAGE, R.strings.PLEASE_SEND_YOUR_MESSAGE),
+    SUCCESS(R.strings.GOT_IT, R.strings.GREAT),
 }
 
 fun SheetStep.next(): SheetStep = when (this) {
@@ -122,7 +120,7 @@ private fun Player(navigation: Navigation) {
             CircularProgressIndicator(modifier = Modifier.size(64.dp))
         }
     } else {
-        var message: String by remember { mutableStateOf(WELCOME) }
+        var message: String by remember { mutableStateOf(R.strings.WELCOME) }
         ModalBottomSheetLayout(sheetState = sheetState, sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp), sheetContent = {
             SheetView(sheetStep, onClick = {
                 if (sheetStep == MESSAGE) {
@@ -132,16 +130,16 @@ private fun Player(navigation: Navigation) {
                 val author: Author = appState.author
                 when (sheetStep) {
                     INITIAL -> {
-                        message = WELCOME
+                        message = R.strings.WELCOME
                     }
                     PAYMENT -> {
                         Column(
                             modifier = Modifier.fillMaxWidth().background(color = Color(0xffF3F2F8), shape = RoundedCornerShape(12.dp)),
                             verticalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {
+                            Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {                                
                                 Text(
-                                    "Блогер",
+                                    R.strings.BLOGGER,
                                     modifier = Modifier.align(alignment = Alignment.CenterStart),
                                     style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
                                 )
@@ -152,9 +150,9 @@ private fun Player(navigation: Navigation) {
                                 )
                             }
                             Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
-                            Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {
+                            Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {                                
                                 Text(
-                                    "Рейтинг",
+                                    R.strings.RATING,
                                     modifier = Modifier.align(alignment = Alignment.CenterStart),
                                     style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
                                 )
@@ -167,17 +165,17 @@ private fun Player(navigation: Navigation) {
                                     val activeStarCount: Int = clamp(author.rating.toInt(), 0, 5)
                                     val inactiveStarCount: Int = 5 - activeStarCount
                                     repeat(activeStarCount) {
-                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = activeStarColor)
+                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = R.colors.activeStarColor)
                                     }
                                     repeat(inactiveStarCount) {
-                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = inactiveStarColor)
+                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = R.colors.inactiveStarColor)
                                     }
                                 }
                             }
                             Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
-                            Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {
+                            Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {                                
                                 Text(
-                                    "Стоимость обзора",
+                                    R.strings.REVIEW_PRICE,
                                     modifier = Modifier.align(alignment = Alignment.CenterStart),
                                     style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
                                 )
@@ -190,9 +188,9 @@ private fun Player(navigation: Navigation) {
                         }
                     }
                     MESSAGE -> {
-                        AnnotatedText("На вашем балансе заморожено 120 рублей, до момента одобрения вами обзора, присланного блогером **@${author.authorDto.name}**. Блогеру отправлен запрос.")
+                        AnnotatedText(R.strings.MONEY_FREEZE(author))
                         Text(
-                            "ВАШЕ СООБЩЕНИЕ",
+                            R.strings.YOUR_MESSAGE,
                             style = TextStyle(color = Color.LightGray, fontSize = 12.sp, fontWeight = FontWeight.Bold),
                             modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
                             textAlign = TextAlign.Start
@@ -201,13 +199,13 @@ private fun Player(navigation: Navigation) {
                             message, onValueChange = { message = it },
                             modifier = Modifier.fillMaxWidth().onFocusChanged {
                                 if (it.isFocused) {
-                                    message = WELCOME_FOCUSED
+                                    message = R.strings.WELCOME_FOCUSED
                                 }
                             },
                         )
                     }
                     SUCCESS -> {
-                        AnnotatedText("Ваше сообщение **@${author.authorDto.name}** отправлено.")
+                        AnnotatedText(R.strings.YOUR_MESSAGE_SENT(author))
                     }
                 }
             }
@@ -259,8 +257,8 @@ private fun Player(navigation: Navigation) {
                         Button(
                             onClick = { updateSheetStep(PAYMENT) },
                             modifier = Modifier.fillMaxWidth().height(80.dp).padding(bottom = 20.dp).clip(shape = RoundedCornerShape(8.dp))
-                        ) {
-                            Text("Заказать обзор у блогера", fontSize = 20.sp)
+                        ) {                            
+                            Text(R.strings.MAKE_ORDER_TO_BLOGGER, fontSize = 20.sp)
                         }
                     }
                 }
@@ -277,29 +275,4 @@ private fun CircleImage(bitmap: ImageBitmap, diameter: Int) {
 @Composable
 private fun Image(drawable: String, width: Int, height: Int, modifier: Modifier = Modifier) {
     Image(drawable.bitmap(), contentDescription = null, modifier = modifier.width(width.dp).height(height.dp))
-}
-
-private fun Long.toTimeText(): String {
-    val time: Long = this
-    val seconds: Long = time % 60
-    val minutes: Long = time / 60
-    return "${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}"
-}
-
-private fun Int.toCountText(): String {
-    val count: Int = this
-    if (count < 1000) {
-        return count.toString()
-    } else if (count < 10000) {
-        val thousands: Float = count / 1000.0f
-        val thousandsText: String = thousands.toText().substring(0, 3)
-        return "$thousandsText тыс."
-    } else {
-        val thousands: Int = count / 1000
-        return "$thousands тыс."
-    }
-}
-
-private fun Float.toText(): String {
-    return toString().replace(".", ",")
 }
