@@ -10,16 +10,16 @@ image-loader-version = "1.5.3"
 [libraries]
 composeGradle = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose" }
 kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-compose-util = {module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose"}
-koin-core = {module = "io.insert-koin:koin-core", version.ref = "koin-version"}
-ktor-java = {module = "io.ktor:ktor-client-java", version.ref = "ktor_version"}
-ktor-serialization = {module = "io.ktor:ktor-client-serialization", version.ref = "ktor_version"}
-ktor-ios = {module = "io.ktor:ktor-client-ios", version.ref = "ktor_version"}
-ktor-client-logging = {module = "io.ktor:ktor-client-logging", version.ref = "ktor_version"}
-ktor-json = {module = "io.ktor:ktor-client-json", version.ref = "ktor_version"}
-ktor-serialization-json = {module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor_version"}
-ktor-contentnegotiation = {module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor_version"}
-kotlin-serialization = {module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serialization"}
-material-icon-core = {module = "org.jetbrains.compose.material:material-icons-core", version.ref = "material-icon-version"}
-material-icon-extended = {module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "material-icon-version"}
-image-loader = {module= "io.github.qdsfdhvh:image-loader", version.ref = "image-loader-version"}
+compose-util = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-version" }
+ktor-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor_version" }
+ktor-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor_version" }
+ktor-ios = { module = "io.ktor:ktor-client-ios", version.ref = "ktor_version" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor_version" }
+ktor-json = { module = "io.ktor:ktor-client-json", version.ref = "ktor_version" }
+ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor_version" }
+ktor-contentnegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor_version" }
+kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serialization" }
+material-icon-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "material-icon-version" }
+material-icon-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "material-icon-version" }
+image-loader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "image-loader-version" }

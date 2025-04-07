@@ -1,4 +1,4 @@
-package site.neotrend.common
+package site.neotrend
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState

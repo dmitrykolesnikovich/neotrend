@@ -1,4 +1,4 @@
-package site.neotrend.common
+package site.neotrend.ios
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -36,90 +36,11 @@ import platform.UIKit.UIImagePNGRepresentation
 import platform.UIKit.UIView
 import platform.UIKit.UIViewController
 import platform.posix.memcpy
-import site.neotrend.common.examples.example2
+import site.neotrend.examples.example2
 
 @Suppress("unused")
 fun MainViewController(): UIViewController = ComposeUIViewController {
 //    App()
 //    example1()
     example2()
-}
-
-@Composable
-actual fun drawableToImageBitmap(drawable: String): ImageBitmap {
-    val image: UIImage = UIImage.imageNamed(drawable, NSBundle.mainBundle, withConfiguration = null) ?: error("drawable: $drawable")
-    val representation: NSData = checkNotNull(UIImagePNGRepresentation(image))
-    val bytes: ByteArray = ByteArray(representation.length.toInt()).apply {
-        usePinned {
-            memcpy(it.addressOf(0), representation.bytes, representation.length)
-        }
-    }
-    return bytes.bitmap()
-}
-
-actual fun ByteArray.bitmap(): ImageBitmap {
-    return Image.makeFromEncoded(this).toComposeImageBitmap()
-}
-
-@ExportObjCClass
-class MyViewController : AVPlayerViewController {
-
-    @OverrideInit
-    constructor(): super(null, null)
-
-    override fun touchesBegan(touches: Set<*>, withEvent: UIEvent?) {
-        val player: AVPlayer = checkNotNull(player)
-        if (player.rate == 0f) {
-            player.rate = 1f
-        } else {
-            player.rate = 0f
-        }
-    }
-
-}
-
-@Composable
-actual fun VideoPlayer(modifier: Modifier, fileName: String)  {
-    val documentsDirectory: NSURL = (NSFileManager.defaultManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask) as List<NSURL>).first()
-    val url: NSURL = NSURL.fileURLWithPath(fileName, relativeToURL = documentsDirectory)
-    if (!url.exists()) {
-        val bytes: ByteArray  = readVideo(fileName)
-        val data: NSData = bytes.toNSData()
-        data.writeToURL(url, atomically = true)
-    }
-    val player: AVPlayer = remember { AVPlayer(url) }
-    val layer: AVPlayerLayer = remember { AVPlayerLayer() }
-    val controller: MyViewController = remember { MyViewController() }
-    controller.player = player
-    controller.showsPlaybackControls = false
-    layer.player = player
-    UIKitView(
-        factory = {
-            UIView().apply {
-                addSubview(controller.view)
-            }
-        },
-        onResize = { view: UIView, rect: CValue<CGRect> ->
-            CATransaction.begin()
-            CATransaction.setValue(true, kCATransactionDisableActions)
-            view.layer.setFrame(rect)
-            layer.setFrame(rect)
-            controller.view.layer.frame = rect
-            CATransaction.commit()
-        },
-        update = {
-            player.play()
-        },
-        modifier = modifier)
-}
-
-private fun ByteArray.toNSData(): NSData {
-    val data: ByteArray = this
-    memScoped {
-        return NSData.create(bytes = allocArrayOf(data), length = data.size.toULong())
-    }
-}
-
-private fun NSURL.exists(): Boolean {
-    return checkResourceIsReachableAndReturnError(null)
 }

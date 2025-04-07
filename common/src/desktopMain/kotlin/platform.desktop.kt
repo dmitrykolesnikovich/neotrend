@@ -1,4 +1,4 @@
-package site.neotrend.common
+package site.neotrend.platform
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
@@ -14,16 +14,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Image
-
-@Composable
-actual fun VideoPlayer(modifier: Modifier, fileName: String) {
-    Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier)
-}
-
-@Composable
-actual fun drawableToImageBitmap(drawable: String): ImageBitmap {
-    return "drawables/$drawable".bitmap()
-}
+import java.io.File
 
 actual fun ByteArray.bitmap(): ImageBitmap {
     val bytes: ByteArray = this
@@ -33,7 +24,7 @@ actual fun ByteArray.bitmap(): ImageBitmap {
 }
 
 @Composable
-private fun String.bitmap(): ImageBitmap {
+actual fun String.bitmap(): ImageBitmap {
     val resourcePath: String = this
     val painter: Painter = painterResource(resourcePath)
     val size: Size = painter.intrinsicSize
@@ -44,4 +35,19 @@ private fun String.bitmap(): ImageBitmap {
         }
     }
     return bitmap
+}
+
+@Composable
+actual fun VideoPlayer(modifier: Modifier, fileName: String) {
+    Image(bitmap = "video-player.png".bitmap(), contentDescription = "video player placeholder", modifier)
+}
+
+actual fun cacheBytes(fileName: String, readBytes: () -> ByteArray) {
+    val file: File = File("${System.getProperty("user.dir")}/.neotrend/videos/$fileName")
+    if (!file.exists()) {
+        file.parentFile.mkdirs()
+        file.createNewFile()
+        val bytes: ByteArray = readBytes()
+        file.writeBytes(bytes)
+    }
 }
