@@ -122,7 +122,6 @@ private fun Player(navigation: Navigation) {
             SheetView(sheetStep, onClick = {
                 if (sheetStep == MESSAGE) {
                     println(message)
-                    message = WELCOME
                 }
             }) {
                 val author: Author = appState.author

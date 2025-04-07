@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import site.neotrend.platform.clamp
 
 private val boldRegex: Regex = Regex("(?<!\\*)\\*\\*(?!\\*).*?(?<!\\*)\\*\\*(?!\\*)")
 private val italicRegex: Regex = Regex("\\*(?![*\\s])(?:[^*]*[^*\\s])?\\*")
@@ -64,13 +65,13 @@ fun AnnotatedTextField(text: String, onValueChange: (String) -> Unit, modifier: 
         results = results.next()
     }
 
-    var result: String = text // replace with StringBuilder
+    var original: String = text // replace with StringBuilder
     val ranges: ArrayList<IntRange> = ArrayList()
     val matches: ArrayList<String> = ArrayList()
     keywords.forEach { keyword ->
-        val index: Int = result.indexOf(keyword)
+        val index: Int = original.indexOf(keyword)
         val match: String = keyword.removeSurrounding("*")
-        result = result.replace(keyword, match)
+        original = original.replace(keyword, match)
         ranges.add(index..index + match.length)
         matches.add(match)
     }
@@ -78,20 +79,19 @@ fun AnnotatedTextField(text: String, onValueChange: (String) -> Unit, modifier: 
     class ColorsTransformation : VisualTransformation {
         override fun filter(text: AnnotatedString): TransformedText {
             val annotatedString: AnnotatedString = buildAnnotatedString {
-                append(result)
+                append(original)
                 ranges.forEach {
-                    addStyle(
-                        style = SpanStyle(fontWeight = FontWeight.Normal, color = Color.Gray, fontSize = fontSize.times(0.95)),
-                        start = it.first,
-                        end = it.last
-                    )
+                    addStyle(style = SpanStyle(fontWeight = FontWeight.Normal, color = Color.Gray, fontSize = fontSize.times(0.95)), start = it.first, end = it.last)
                 }
             }
-            return TransformedText(annotatedString, OffsetMapping.Identity)
+            return TransformedText(annotatedString, object : OffsetMapping {
+                override fun originalToTransformed(offset: Int): Int = clamp(offset, 0, original.length)
+                override fun transformedToOriginal(offset: Int): Int = clamp(offset, 0, original.length)
+            })
         }
     }
     TextField(
-        value = result,
+        value = original,
         onValueChange = { onValueChange(it) },
         modifier = modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
         visualTransformation = ColorsTransformation()
