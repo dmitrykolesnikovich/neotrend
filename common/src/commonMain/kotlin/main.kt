@@ -93,7 +93,11 @@ private fun Player(navigation: Navigation) {
 
     @Composable
     fun SheetView(step: SheetStep, onClick: () -> Unit, content: @Composable () -> Unit) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.padding(end = 16.dp, start = 16.dp, top = 12.dp, bottom = 32.dp)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.padding(end = 16.dp, start = 16.dp, top = 12.dp, bottom = 32.dp)
+        ) {
             Box(modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
                 Text(step.title, style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 18.sp), modifier = Modifier.align(alignment = Alignment.Center))
                 IconButton(onClick = { updateSheetStep(INITIAL) }, modifier = Modifier.align(alignment = Alignment.CenterEnd).size(24.dp)) {
@@ -131,9 +135,16 @@ private fun Player(navigation: Navigation) {
                         message = WELCOME
                     }
                     PAYMENT -> {
-                        Column(modifier = Modifier.fillMaxWidth().background(color = Color(0xffF3F2F8), shape = RoundedCornerShape(12.dp)), verticalArrangement = Arrangement.SpaceEvenly) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().background(color = Color(0xffF3F2F8), shape = RoundedCornerShape(12.dp)),
+                            verticalArrangement = Arrangement.SpaceEvenly
+                        ) {
                             Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {
-                                Text("Блогер", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
+                                Text(
+                                    "Блогер",
+                                    modifier = Modifier.align(alignment = Alignment.CenterStart),
+                                    style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
+                                )
                                 Text(
                                     "@${author.authorDto.name}",
                                     modifier = Modifier.align(alignment = Alignment.CenterEnd),
@@ -142,7 +153,11 @@ private fun Player(navigation: Navigation) {
                             }
                             Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
                             Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {
-                                Text("Рейтинг", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
+                                Text(
+                                    "Рейтинг",
+                                    modifier = Modifier.align(alignment = Alignment.CenterStart),
+                                    style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
+                                )
                                 Row(modifier = Modifier.align(alignment = Alignment.CenterEnd), verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         author.rating.toText(),
@@ -161,7 +176,11 @@ private fun Player(navigation: Navigation) {
                             }
                             Divider(startIndent = 8.dp, thickness = 1.dp, color = Color(0xffDEDEDE))
                             Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 12.dp, end = 12.dp)) {
-                                Text("Стоимость обзора", style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp))
+                                Text(
+                                    "Стоимость обзора",
+                                    modifier = Modifier.align(alignment = Alignment.CenterStart),
+                                    style = TextStyle(fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
+                                )
                                 Text(
                                     "120 BYN",
                                     modifier = Modifier.align(alignment = Alignment.CenterEnd),
@@ -212,7 +231,11 @@ private fun Player(navigation: Navigation) {
                             Row(modifier = Modifier.padding(top = 8.dp, bottom = 32.dp, start = 8.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Text(appState.author.fileName, color = Color.White, style = TextStyle(fontSize = 20.sp))
                                 Spacer(Modifier.fillMaxWidth().weight(1f))
-                                Text("${appState.author.createdDate} ${if (video.duration.value != 0L) " (${video.duration.value.toTimeText()})" else ""}", color = Color.White, fontSize = 16.sp)
+                                Text(
+                                    "${appState.author.createdDate} ${if (video.duration.value != 0L) " (${video.duration.value.toTimeText()})" else ""}",
+                                    color = Color.White,
+                                    fontSize = 16.sp
+                                )
                             }
                             Row(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp), horizontalArrangement = Arrangement.SpaceAround) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -233,7 +256,10 @@ private fun Player(navigation: Navigation) {
                                 }
                             }
                         }
-                        Button(onClick = { updateSheetStep(PAYMENT) }, modifier = Modifier.fillMaxWidth().height(80.dp).padding(bottom = 20.dp).clip(shape = RoundedCornerShape(8.dp))) {
+                        Button(
+                            onClick = { updateSheetStep(PAYMENT) },
+                            modifier = Modifier.fillMaxWidth().height(80.dp).padding(bottom = 20.dp).clip(shape = RoundedCornerShape(8.dp))
+                        ) {
                             Text("Заказать обзор у блогера", fontSize = 20.sp)
                         }
                     }
