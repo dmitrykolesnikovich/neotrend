@@ -25,7 +25,8 @@ fun Int.toCountText(): String {
 }
 
 fun Float.toText(): String {
-    return toString().replace(".", ",").substring(0, 3)
+    check(this < 10f) // assert for now todo make it better
+    return toString().replace(".", ",").substring(0, 3) // single sign after the decimal point todo make it configurable
 }
 
 fun clamp(value: Int, min: Number = 0f, max: Number = 1f): Int {
