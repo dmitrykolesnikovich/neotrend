@@ -1,7 +1,5 @@
 # Neotrend
 
-## Before running!
-
 ## iOS
 
 To run the application on iPhone device/simulator:
