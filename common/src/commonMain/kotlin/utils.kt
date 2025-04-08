@@ -16,7 +16,7 @@ fun Int.toCountText(): String {
         return count.toString()
     } else if (count < 10000) {
         val thousands: Float = count / 1000.0f
-        val thousandsText: String = thousands.toText().substring(0, 3)
+        val thousandsText: String = thousands.toText()
         return "$thousandsText тыс."
     } else {
         val thousands: Int = count / 1000
@@ -25,7 +25,7 @@ fun Int.toCountText(): String {
 }
 
 fun Float.toText(): String {
-    return toString().replace(".", ",")
+    return toString().replace(".", ",").substring(0, 3)
 }
 
 fun clamp(value: Int, min: Number = 0f, max: Number = 1f): Int {
