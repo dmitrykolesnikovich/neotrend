@@ -165,10 +165,10 @@ private fun Player(navigation: Navigation) {
                                     val activeStarCount: Int = clamp(author.rating.toInt(), 0, 5)
                                     val inactiveStarCount: Int = 5 - activeStarCount
                                     repeat(activeStarCount) {
-                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = R.colors.activeStar)
+                                        Icon(R.drawables.grayStarSvg.bitmap(), contentDescription = null, tint = R.colors.activeStar)
                                     }
                                     repeat(inactiveStarCount) {
-                                        Icon("gray_star.svg".bitmap(), contentDescription = null, tint = R.colors.inactiveStar)
+                                        Icon(R.drawables.grayStarSvg.bitmap(), contentDescription = null, tint = R.colors.inactiveStar)
                                     }
                                 }
                             }
@@ -196,7 +196,8 @@ private fun Player(navigation: Navigation) {
                             textAlign = TextAlign.Start
                         )
                         AnnotatedTextField(
-                            message, onValueChange = { message = it },
+                            message,
+                            onValueChange = { message = it },
                             modifier = Modifier.fillMaxWidth().onFocusChanged {
                                 if (it.isFocused) {
                                     message = R.strings.welcomeFocused
@@ -237,19 +238,19 @@ private fun Player(navigation: Navigation) {
                             }
                             Row(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp), horizontalArrangement = Arrangement.SpaceAround) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Image("eye.svg", 29, 28, Modifier.scale(1.25f))
+                                    Image(R.drawables.eyeSvg, 29, 28, Modifier.scale(1.25f))
                                     Text(statistics.viewsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp), fontSize = 20.sp)
                                 }
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Image("comments.svg", 29, 28, Modifier.scale(1.25f))
+                                    Image(R.drawables.commentsSvg, 29, 28, Modifier.scale(1.25f))
                                     Text(statistics.commentsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp), fontSize = 20.sp)
                                 }
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Image("arrows.svg", 29, 28, Modifier.scale(1.25f))
+                                    Image(R.drawables.arrowsSvg, 29, 28, Modifier.scale(1.25f))
                                     Text(statistics.repostsCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp), fontSize = 20.sp)
                                 }
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Image("bookmark.svg", 29, 28, Modifier.scale(1.25f))
+                                    Image(R.drawables.bookmarkSvg, 29, 28, Modifier.scale(1.25f))
                                     Text(statistics.savesCount.toCountText(), color = Color.White, modifier = Modifier.padding(top = 8.dp), fontSize = 20.sp)
                                 }
                             }
@@ -265,14 +266,4 @@ private fun Player(navigation: Navigation) {
             }
         }
     }
-}
-
-@Composable
-private fun CircleImage(bitmap: ImageBitmap, diameter: Int) {
-    Image(bitmap, contentDescription = null, modifier = Modifier.size(diameter.dp).clip(RoundedCornerShape((diameter / 2).dp)))
-}
-
-@Composable
-private fun Image(drawable: String, width: Int, height: Int, modifier: Modifier = Modifier) {
-    Image(drawable.bitmap(), contentDescription = null, modifier = modifier.width(width.dp).height(height.dp))
 }

@@ -7,6 +7,14 @@ object R {
         val activeStar: Color = Color(0xff3EDC6D)
         val inactiveStar: Color = Color(0xffDBDADF)
     }
+    object drawables {
+        const val arrowsSvg: String = "arrows.svg"
+        const val bookmarkSvg: String = "bookmark.svg"
+        const val commentsSvg: String = "comments.svg"
+        const val eyeSvg: String = "eye.svg"
+        const val grayStarSvg: String = "gray_star.svg"
+//        const val greenStarSvg: String = "green_star.svg"
+    }
     object strings {
         const val bloggerRating: String = "Рейтинг блогера"
         const val blogger: String = "Блогер"

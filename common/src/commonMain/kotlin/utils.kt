@@ -1,5 +1,8 @@
 package site.neotrend
 
+import kotlin.math.max
+import kotlin.math.min
+
 fun Long.toTimeText(): String {
     val time: Long = this
     val seconds: Long = time % 60
@@ -23,4 +26,8 @@ fun Int.toCountText(): String {
 
 fun Float.toText(): String {
     return toString().replace(".", ",")
+}
+
+fun clamp(value: Int, min: Number = 0f, max: Number = 1f): Int {
+    return max(min.toInt(), min(max.toInt(), value))
 }

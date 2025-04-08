@@ -14,6 +14,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import site.neotrend.platform.bitmap
 import site.neotrend.platform.cacheBytes
+import kotlin.random.Random
 
 class AppState(val author: Author, val avatarBitmap: ImageBitmap)
 
@@ -24,7 +25,7 @@ data class Author(
     val fileName: String,
     val statistics: AuthorStatistics,
     val authorDto: AuthorDto,
-    val rating: Float = 3.78f,
+    val rating: Float = Random.nextFloat() * 5,
 )
 
 @Serializable

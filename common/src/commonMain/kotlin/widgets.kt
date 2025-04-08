@@ -1,11 +1,22 @@
 package site.neotrend
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -17,7 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import site.neotrend.platform.clamp
+import site.neotrend.platform.bitmap
 
 private val boldRegex: Regex = Regex("(?<!\\*)\\*\\*(?!\\*).*?(?<!\\*)\\*\\*(?!\\*)")
 private val italicRegex: Regex = Regex("\\*(?![*\\s])(?:[^*]*[^*\\s])?\\*")
@@ -102,4 +113,18 @@ fun AnnotatedTextField(text: String, onValueChange: (String) -> Unit, modifier: 
 @Composable
 fun Modifier.keyboardBottomPadding(): Modifier {
     return padding(bottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding())
+}
+
+@Composable
+fun CircleImage(bitmap: ImageBitmap, diameter: Int) {
+    Image(
+        bitmap = bitmap,
+        contentDescription = null,
+        modifier = Modifier.size(diameter.dp).clip(RoundedCornerShape((diameter / 2).dp))
+    )
+}
+
+@Composable
+fun Image(drawable: String, width: Int, height: Int, modifier: Modifier = Modifier) {
+    Image(drawable.bitmap(), contentDescription = null, modifier = modifier.width(width.dp).height(height.dp))
 }
