@@ -9,4 +9,4 @@ To run the application on iPhone device/simulator:
 ## Desktop
 
 - install JDK 17
-- run `desktop:run`
+- run `gradlew desktop:run`
