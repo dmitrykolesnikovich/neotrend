@@ -6,7 +6,7 @@ To run the application on iPhone device/simulator:
 
 - Open `ios/iosApp.xcworkspace` in Xcode and run standard configuration
 
-https://github.com/dmitrykolesnikovich/neotrend/blob/main/video_2025-04-08_11-34-00.mp4
+![](video_2025-04-08_11-34-00.mp4)
 
 ## Desktop
 
