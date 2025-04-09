@@ -25,7 +25,7 @@ fun Int.toCountText(): String {
 }
 
 fun Float.toText(): String {
-    check(this < 10f) // assert for now todo make it better
+    check(this < 10f) // assert for now todo make it safer
     return toString().replace(".", ",").substring(0, 3) // single sign after the decimal point todo make it configurable
 }
 

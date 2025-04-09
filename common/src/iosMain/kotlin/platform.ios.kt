@@ -22,11 +22,14 @@ import platform.AVFoundation.AVPlayer
 import platform.AVFoundation.AVPlayerItem
 import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerLayer
+import platform.AVFoundation.AVPlayerTimeControlStatusPaused
 import platform.AVFoundation.currentItem
 import platform.AVFoundation.duration
+import platform.AVFoundation.pause
 import platform.AVFoundation.play
 import platform.AVFoundation.rate
 import platform.AVFoundation.seekToTime
+import platform.AVFoundation.timeControlStatus
 import platform.AVKit.AVPlayerViewController
 import platform.CoreGraphics.CGRect
 import platform.CoreMedia.CMTime
@@ -75,6 +78,11 @@ actual fun VideoPlayer(video: Video, modifier: Modifier) {
         override fun touchesBegan(touches: Set<*>, withEvent: UIEvent?) {
             onClick()
             val player: AVPlayer = checkNotNull(player)
+//            if (player.timeControlStatus == AVPlayerTimeControlStatusPaused) {
+//                player.play()
+//            } else  {
+//                player.pause()
+//            }
             if (player.rate == 0f) {
                 player.rate = 1f
             } else {
